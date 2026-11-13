@@ -1,0 +1,137 @@
+{
+  "title": "Structure",
+  "description": "Domaines, modules et leçons : le parcours que suivent les apprenants, dans l'ordre affiché ici.",
+  "actions": {
+    "addDomain": "Ajouter un domaine",
+    "addModule": "Ajouter un module",
+    "addModuleHere": "Ajouter un module ici",
+    "expandAll": "Tout déplier",
+    "collapseAll": "Tout replier",
+    "viewLessons": "Voir les leçons",
+    "moveUp": "Monter",
+    "moveDown": "Descendre",
+    "changeDomain": "Changer de domaine",
+    "editDomain": "Modifier le domaine",
+    "editModule": "Modifier le module",
+    "deleteDomain": "Supprimer le domaine",
+    "deleteModule": "Supprimer le module",
+    "domainActions": "Actions du domaine {{name}}",
+    "moduleActions": "Actions du module {{name}}",
+    "moveUpNamed": "Monter {{name}}",
+    "moveDownNamed": "Descendre {{name}}"
+  },
+  "stats": {
+    "domains": "Domaines",
+    "modules": "Modules",
+    "lessons": "Leçons",
+    "published": "Publiées",
+    "publishedHint": "{{published}} sur {{total}}"
+  },
+  "count": {
+    "modules_one": "{{count}} module",
+    "modules_other": "{{count}} modules",
+    "lessons_one": "{{count}} leçon",
+    "lessons_other": "{{count}} leçons",
+    "published_one": "{{count}} publiée sur {{total}}",
+    "published_other": "{{count}} publiées sur {{total}}"
+  },
+  "filter": {
+    "label": "Filtrer les modules",
+    "placeholder": "Nom, question centrale ou thème",
+    "noMatch": "Aucun module ne correspond à « {{q}} ».",
+    "clear": "Effacer le filtre"
+  },
+  "tree": {
+    "noQuestion": "Pas encore de question centrale",
+    "themeLabel": "Thème",
+    "emptyDomain": "Aucun module dans ce domaine pour l'instant.",
+    "position": "« {{name}} » est maintenant en position {{pos}}.",
+    "domainMark": "Domaine {{code}}"
+  },
+  "orphans": {
+    "notice": "Certains éléments ne sont rangés nulle part",
+    "modules_one": "{{count}} module n'a pas de domaine.",
+    "modules_other": "{{count}} modules n'ont pas de domaine.",
+    "lessons_one": "{{count}} leçon n'est rattachée à aucun module.",
+    "lessons_other": "{{count}} leçons ne sont rattachées à aucun module.",
+    "noDomain": "Sans domaine",
+    "noDomainHint": "Ces modules n'apparaissent dans aucun domaine. Rattachez-les avec « Changer de domaine ».",
+    "lessonsTitle": "Leçons sans module",
+    "lessonsHint": "Rattachez-les à un module depuis l'écran Leçons pour qu'elles apparaissent dans le parcours.",
+    "seeLessons": "Voir ces leçons"
+  },
+  "empty": {
+    "title": "La structure est vide",
+    "description": "Créez un premier domaine, ou importez le programme TACTIC pour créer domaines, modules et leçons en une fois.",
+    "import": "Importer le programme"
+  },
+  "error": {
+    "title": "Impossible de charger la structure",
+    "body": "Vérifiez votre connexion, puis réessayez."
+  },
+  "domainForm": {
+    "titleNew": "Nouveau domaine",
+    "titleEdit": "Modifier le domaine",
+    "description": "Un domaine regroupe plusieurs modules autour d'un grand sujet.",
+    "emoji": "Emoji affiché dans l'app mobile",
+    "emojiHint": "Facultatif. N'apparaît pas dans l'admin.",
+    "name": "Nom du domaine",
+    "objective": "Objectif",
+    "objectiveHint": "Facultatif. Ce que l'apprenant sait faire à la fin du domaine.",
+    "nameRequired": "Donnez un nom au domaine.",
+    "exists": "Un domaine porte déjà ce nom.",
+    "create": "Créer le domaine",
+    "save": "Enregistrer le domaine",
+    "created": "Domaine créé",
+    "saved": "Domaine enregistré"
+  },
+  "moduleForm": {
+    "titleNew": "Nouveau module",
+    "titleEdit": "Modifier le module",
+    "description": "Un module regroupe les leçons qui répondent à une même question.",
+    "emoji": "Emoji affiché dans l'app mobile",
+    "name": "Nom du module",
+    "nameEn": "Nom en anglais",
+    "nameEnHint": "Facultatif. Affiché quand l'application est en anglais.",
+    "domain": "Domaine",
+    "noDomain": "Sans domaine",
+    "coreQuestion": "Question centrale",
+    "coreQuestionHint": "La question à laquelle le module répond. Par exemple : « Comment ne pas finir le mois à découvert ? »",
+    "theme": "Thème",
+    "themeHint": "Facultatif. Le sujet commun aux leçons du module, par exemple « Budget étudiant ».",
+    "nameRequired": "Donnez un nom au module.",
+    "exists": "Un module porte déjà ce nom.",
+    "create": "Créer le module",
+    "save": "Enregistrer le module",
+    "created": "Module créé",
+    "saved": "Module enregistré",
+    "emojiHint": "Facultatif. N'apparaît pas dans l'admin."
+  },
+  "move": {
+    "title": "Changer de domaine",
+    "description": "Choisissez le domaine de « {{name}} ». Ses leçons restent dans le module.",
+    "submit": "Déplacer le module",
+    "done": "Module déplacé"
+  },
+  "deleteDomain": {
+    "title": "Supprimer le domaine « {{name}} » ?",
+    "body_one": "Son module passera dans « Sans domaine », avec ses leçons. Aucun module ni aucune leçon n'est supprimé.",
+    "body_other": "Ses {{count}} modules passeront dans « Sans domaine », avec leurs leçons. Aucun module ni aucune leçon n'est supprimé.",
+    "bodyEmpty": "Ce domaine ne contient aucun module.",
+    "confirm": "Supprimer le domaine"
+  },
+  "deleteModule": {
+    "title": "Supprimer le module « {{name}} » ?",
+    "body_one": "Sa leçon sera détachée et rangée dans « Leçons sans module ». Elle n'est pas supprimée.",
+    "body_other": "Ses {{count}} leçons seront détachées et rangées dans « Leçons sans module ». Elles ne sont pas supprimées.",
+    "bodyEmpty": "Ce module ne contient aucune leçon.",
+    "resources": "Les ressources de la bibliothèque liées à ce module n'y seront plus rattachées.",
+    "confirm": "Supprimer le module"
+  },
+  "discard": {
+    "title": "Abandonner les modifications ?",
+    "body": "Ce que vous avez saisi ne sera pas enregistré.",
+    "confirm": "Abandonner",
+    "keep": "Continuer la saisie"
+  }
+}

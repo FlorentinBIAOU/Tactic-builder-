@@ -1,0 +1,137 @@
+{
+  "title": "Structure",
+  "description": "Domains, modules and lessons: the path learners follow, in the order shown here.",
+  "actions": {
+    "addDomain": "Add a domain",
+    "addModule": "Add a module",
+    "addModuleHere": "Add a module here",
+    "expandAll": "Expand all",
+    "collapseAll": "Collapse all",
+    "viewLessons": "View lessons",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "changeDomain": "Change domain",
+    "editDomain": "Edit domain",
+    "editModule": "Edit module",
+    "deleteDomain": "Delete domain",
+    "deleteModule": "Delete module",
+    "domainActions": "Actions for domain {{name}}",
+    "moduleActions": "Actions for module {{name}}",
+    "moveUpNamed": "Move {{name}} up",
+    "moveDownNamed": "Move {{name}} down"
+  },
+  "stats": {
+    "domains": "Domains",
+    "modules": "Modules",
+    "lessons": "Lessons",
+    "published": "Published",
+    "publishedHint": "{{published}} of {{total}}"
+  },
+  "count": {
+    "modules_one": "{{count}} module",
+    "modules_other": "{{count}} modules",
+    "lessons_one": "{{count}} lesson",
+    "lessons_other": "{{count}} lessons",
+    "published_one": "{{count}} of {{total}} published",
+    "published_other": "{{count}} of {{total}} published"
+  },
+  "filter": {
+    "label": "Filter modules",
+    "placeholder": "Name, core question or theme",
+    "noMatch": "No module matches “{{q}}”.",
+    "clear": "Clear filter"
+  },
+  "tree": {
+    "noQuestion": "No core question yet",
+    "themeLabel": "Theme",
+    "emptyDomain": "No modules in this domain yet.",
+    "position": "“{{name}}” is now in position {{pos}}.",
+    "domainMark": "Domain {{code}}"
+  },
+  "orphans": {
+    "notice": "Some items are not filed anywhere",
+    "modules_one": "{{count}} module has no domain.",
+    "modules_other": "{{count}} modules have no domain.",
+    "lessons_one": "{{count}} lesson is not in any module.",
+    "lessons_other": "{{count}} lessons are not in any module.",
+    "noDomain": "No domain",
+    "noDomainHint": "These modules do not appear in any domain. Attach them with “Change domain”.",
+    "lessonsTitle": "Lessons without a module",
+    "lessonsHint": "Attach them to a module from the Lessons screen so they appear in the learning path.",
+    "seeLessons": "View these lessons"
+  },
+  "empty": {
+    "title": "The structure is empty",
+    "description": "Create a first domain, or import the TACTIC syllabus to create domains, modules and lessons in one go.",
+    "import": "Import the syllabus"
+  },
+  "error": {
+    "title": "The structure could not be loaded",
+    "body": "Check your connection, then try again."
+  },
+  "domainForm": {
+    "titleNew": "New domain",
+    "titleEdit": "Edit domain",
+    "description": "A domain groups several modules around one broad subject.",
+    "emoji": "Emoji shown in the mobile app",
+    "emojiHint": "Optional. Not shown in the admin.",
+    "name": "Domain name",
+    "objective": "Objective",
+    "objectiveHint": "Optional. What the learner can do at the end of the domain.",
+    "nameRequired": "Give the domain a name.",
+    "exists": "A domain with this name already exists.",
+    "create": "Create domain",
+    "save": "Save domain",
+    "created": "Domain created",
+    "saved": "Domain saved"
+  },
+  "moduleForm": {
+    "titleNew": "New module",
+    "titleEdit": "Edit module",
+    "description": "A module groups the lessons that answer the same question.",
+    "emoji": "Emoji shown in the mobile app",
+    "name": "Module name",
+    "nameEn": "English name",
+    "nameEnHint": "Optional. Shown when the app is in English.",
+    "domain": "Domain",
+    "noDomain": "No domain",
+    "coreQuestion": "Core question",
+    "coreQuestionHint": "The question the module answers. For example: “How do I avoid running out of money before payday?”",
+    "theme": "Theme",
+    "themeHint": "Optional. The subject the module's lessons share, for example “Student budget”.",
+    "nameRequired": "Give the module a name.",
+    "exists": "A module with this name already exists.",
+    "create": "Create module",
+    "save": "Save module",
+    "created": "Module created",
+    "saved": "Module saved",
+    "emojiHint": "Optional. Not shown in the admin."
+  },
+  "move": {
+    "title": "Change domain",
+    "description": "Choose the domain for “{{name}}”. Its lessons stay in the module.",
+    "submit": "Move module",
+    "done": "Module moved"
+  },
+  "deleteDomain": {
+    "title": "Delete the domain “{{name}}”?",
+    "body_one": "Its module will move to “No domain”, with its lessons. No module or lesson is deleted.",
+    "body_other": "Its {{count}} modules will move to “No domain”, with their lessons. No module or lesson is deleted.",
+    "bodyEmpty": "This domain has no modules.",
+    "confirm": "Delete domain"
+  },
+  "deleteModule": {
+    "title": "Delete the module “{{name}}”?",
+    "body_one": "Its lesson will be detached and listed under “Lessons without a module”. It is not deleted.",
+    "body_other": "Its {{count}} lessons will be detached and listed under “Lessons without a module”. They are not deleted.",
+    "bodyEmpty": "This module has no lessons.",
+    "resources": "Library resources linked to this module will no longer be attached to it.",
+    "confirm": "Delete module"
+  },
+  "discard": {
+    "title": "Discard your changes?",
+    "body": "What you typed will not be saved.",
+    "confirm": "Discard",
+    "keep": "Keep editing"
+  }
+}
