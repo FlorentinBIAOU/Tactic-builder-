@@ -1,0 +1,234 @@
+{
+  "title": "Agents",
+  "description": "Onze agents analysent le corpus et proposent des plans. Chaque étape s'appuie sur les rapports de la précédente ; rien n'est publié sans l'équipe.",
+  "tabs": {
+    "pipeline": "Pipeline",
+    "reports": "Rapports",
+    "reportsCount": "Rapports ({{count}})"
+  },
+  "stages": {
+    "analysis": {
+      "name": "Analyse",
+      "hint": "Ce qui existe : corpus, programme, résultats des apprenants."
+    },
+    "planning": {
+      "name": "Planification",
+      "hint": "Qui apprend et quoi faire en priorité."
+    },
+    "production": {
+      "name": "Production",
+      "hint": "Contenus à créer, actualités, missions."
+    },
+    "distribution": {
+      "name": "Diffusion",
+      "hint": "Promotion et notifications aux apprenants."
+    },
+    "supervision": {
+      "name": "Supervision TACT",
+      "hint": "Relecture croisée de tous les rapports."
+    }
+  },
+  "agent": {
+    "corpus": {
+      "name": "Corpus",
+      "mission": "Fait l'état des lieux du corpus : modules vides ou trop chargés, doublons, leçons sans contenu."
+    },
+    "syllabus": {
+      "name": "Programme",
+      "mission": "Compare le corpus au programme officiel TACTIC et liste ce qui manque, domaine par domaine."
+    },
+    "performance": {
+      "name": "Performance",
+      "mission": "Repère les leçons et modules où les apprenants décrochent ou échouent le plus."
+    },
+    "user_model": {
+      "name": "Profils d'apprenants",
+      "mission": "Décrit trois à cinq profils d'apprenants, leurs difficultés et ce dont ils ont besoin ensuite."
+    },
+    "recommendations": {
+      "name": "Recommandations",
+      "mission": "Transforme profils et couverture du programme en plan d'action priorisé pour la semaine."
+    },
+    "create": {
+      "name": "Création",
+      "mission": "Propose les leçons à écrire ensuite et génère des brouillons (blocs et quiz) pour les leçons vides."
+    },
+    "news": {
+      "name": "Actualités",
+      "mission": "Propose des sujets tirés de l'actualité économique et les rattache aux modules du corpus."
+    },
+    "mission": {
+      "name": "Missions",
+      "mission": "Propose des exercices pratiques et défis adaptés au niveau réel des apprenants."
+    },
+    "marketing": {
+      "name": "Marketing",
+      "mission": "Compare les canaux d'acquisition et propose où investir le budget."
+    },
+    "notification": {
+      "name": "Notifications",
+      "mission": "Propose quand et comment prévenir les apprenants, segment par segment."
+    },
+    "tact": {
+      "name": "Supervision TACT",
+      "mission": "Relit tous les rapports, repère les contradictions et donne un avis sur ce qui semble prêt."
+    }
+  },
+  "status": {
+    "never": "Jamais lancé",
+    "fresh": "À jour",
+    "outdated": "À relancer",
+    "blocked": "Dépendances manquantes",
+    "running": "En cours",
+    "failed": "Échec"
+  },
+  "card": {
+    "lastReport": "Dernier rapport {{when}}",
+    "noReport": "Aucun rapport",
+    "uses": "Utilise : {{list}}",
+    "open": "Ouvrir {{name}}",
+    "highlightUpstream": "Fournit des données à l'agent sélectionné",
+    "highlightDownstream": "Utilise les rapports de l'agent sélectionné"
+  },
+  "legend": {
+    "hint": "Survolez ou sélectionnez un agent pour voir ses liens :",
+    "upstream": "bordure pleine, agents dont il dépend",
+    "downstream": "pointillés, agents qui utilisent ses rapports"
+  },
+  "detail": {
+    "statusTitle": "État",
+    "run": "Lancer l'agent",
+    "rerun": "Relancer l'agent",
+    "runSupervision": "Lancer la supervision",
+    "running": "L'agent analyse les données…",
+    "runningHint": "Cela prend en général 20 à 60 secondes. Vous pouvez fermer ce panneau.",
+    "blockedReason_one": "Lancez d'abord l'agent {{list}} : cet agent a besoin de son rapport.",
+    "blockedReason_other": "Lancez d'abord les agents {{list}} : cet agent a besoin de leurs rapports.",
+    "tactBlocked": "Lancez au moins un autre agent : la supervision relit leurs rapports.",
+    "newerDeps": "{{list}} a été relancé depuis le dernier rapport de cet agent.",
+    "oldDeps": "Rapport de plus de {{days}} jours pour : {{list}}. Relancez-les pour une analyse à jour.",
+    "selfOld": "Le dernier rapport a plus de {{days}} jours.",
+    "blindSpots": "Pas encore lancés, signalés comme angles morts : {{list}}.",
+    "neverHint": "Toutes les données nécessaires sont là. Lancez l'agent pour obtenir son premier rapport.",
+    "freshHint": "Le rapport tient compte des dernières versions des agents dont il dépend.",
+    "dependencies": "Dépend de",
+    "noDependencies": "Aucune dépendance : cet agent travaille directement sur les données.",
+    "dependents": "Ses rapports servent à :",
+    "never": "jamais lancé",
+    "lastReport": "Dernier rapport",
+    "lastReportOn": "Rapport du {{date}}",
+    "allReports": "Voir tous ses rapports",
+    "emptyTitle": "Aucun rapport pour l'instant",
+    "emptyBody": "Le rapport s'affichera ici après le premier lancement. Il est aussi enregistré dans l'onglet Rapports.",
+    "errorTitle": "L'agent n'a pas pu terminer",
+    "errorBody": "Réessayez dans un instant. Si le problème continue, le quota IA du jour est peut-être atteint.",
+    "errorDetail": "Détail : {{error}}",
+    "previousReport": "Dernier rapport réussi",
+    "plan": "Cet agent rédige un plan (texte). Il ne crée, ne publie et n'envoie rien : c'est à l'équipe de le mettre en œuvre.",
+    "planNews": "Aucun flux d'actualités n'est branché : l'agent raisonne sur des types d'événements récurrents (taux, inflation, résultats d'entreprises) et ne cite pas de chiffres.",
+    "planNotification": "Aucune notification n'est envoyée : l'envoi se fera depuis l'application mobile.",
+    "planMission": "Aucune mission n'est créée dans l'application : le plan décrit ce que l'agent Création pourra produire.",
+    "verdict": "Avis consultatif : la supervision ne valide, ne bloque et ne publie rien. C'est l'équipe qui décide.",
+    "analyticsUnavailable": "Les statistiques d'apprentissage ne sont pas disponibles : l'agent le saura et travaillera sans.",
+    "demoData": "Une partie des statistiques d'apprentissage sont des données de démonstration.",
+    "dataSent": "Données envoyées",
+    "dataSentHint": "Agrégats calculés sur tout le corpus, et non un extrait des premières leçons.",
+    "inputs": {
+      "corpus": "Totaux du corpus par domaine et niveau, et {{count}} leçons représentatives (en priorité celles à compléter)",
+      "modules": "Chiffres par module : leçons, publiées, sans contenu, sans quiz",
+      "syllabus": "Couverture du programme officiel par domaine et modules incomplets",
+      "performance": "Statistiques d'apprentissage : réussite, leçons difficiles, temps passé, rétention",
+      "marketing": "Indicateurs marketing : dépenses, conversions, coût d'acquisition",
+      "upstream": "Résumé des rapports amont : trois constats au plus chacun, avec leur date"
+    },
+    "size": "Taille : {{size}} sur {{limit}} autorisés",
+    "reduced": "Réduit pour tenir dans la limite : listes raccourcies, aucune donnée coupée en plein milieu.",
+    "showPayload": "Voir le contenu exact envoyé"
+  },
+  "report": {
+    "findings": "Constats",
+    "lessons": "Leçons citées",
+    "empty": "Ce rapport ne contient aucun constat.",
+    "lessonId": "Identifiant {{id}}"
+  },
+  "run": {
+    "done": "Rapport {{name}} enregistré",
+    "notSaved": "Rapport {{name}} terminé mais non enregistré : il disparaîtra au rechargement de la page.",
+    "failed": "L'agent {{name}} n'a pas pu terminer."
+  },
+  "create": {
+    "title": "Générer des brouillons",
+    "description": "Choisissez un module : l'agent écrit les blocs et le quiz de chaque leçon vide. Tout est enregistré en brouillon, à relire avant publication.",
+    "domain": "Domaine",
+    "allDomains": "Tous les domaines",
+    "module": "Module",
+    "chooseModule": "Choisir un module",
+    "noModules": "Aucun module dans ce domaine.",
+    "emptyCount_zero": "Aucune leçon vide dans ce module.",
+    "emptyCount_one": "1 leçon vide sera générée.",
+    "emptyCount_other": "{{count}} leçons vides seront générées.",
+    "generate_zero": "Générer les brouillons",
+    "generate_one": "Générer 1 brouillon",
+    "generate_other": "Générer {{count}} brouillons",
+    "stop": "Arrêter",
+    "stopping": "Arrêt en cours…",
+    "progress": "Leçon {{done}} sur {{total}}",
+    "current": "En cours : {{name}}",
+    "progressLabel": "Progression de la génération",
+    "skipHint": "Une leçon modifiée par quelqu'un pendant la génération est laissée telle quelle.",
+    "summary": "{{ok}} brouillon(s) créé(s) sur {{total}}.",
+    "summarySkipped": "{{count}} leçon(s) ignorée(s) car modifiée(s) entre-temps.",
+    "summaryFailed": "{{count}} échec(s).",
+    "summaryStopped": "Génération arrêtée.",
+    "noneEmpty": "Aucune leçon vide dans ce module."
+  },
+  "reports": {
+    "agent": "Agent",
+    "allAgents": "Tous les agents",
+    "status": "Statut",
+    "allStatuses": "Tous les statuts",
+    "from": "Du",
+    "to": "Au",
+    "reset": "Effacer les filtres",
+    "refresh": "Actualiser",
+    "count_zero": "Aucun rapport",
+    "count_one": "1 rapport",
+    "count_other": "{{count}} rapports",
+    "date": "Date",
+    "content": "Contenu",
+    "findings_zero": "Aucun constat",
+    "findings_one": "1 constat",
+    "findings_other": "{{count}} constats",
+    "actions": "Actions sur le rapport du {{date}}",
+    "read": "Lire le rapport",
+    "changeStatus": "Changer le statut",
+    "delete": "Supprimer le rapport",
+    "deleteTitle": "Supprimer ce rapport ?",
+    "deleteBody": "Le rapport {{name}} du {{date}} sera supprimé définitivement. Les agents qui s'en servaient utiliseront le rapport précédent, s'il existe.",
+    "deleted": "Rapport supprimé",
+    "statusChanged": "Statut mis à jour : {{status}}",
+    "emptyTitle": "Aucun rapport enregistré",
+    "emptyBody": "Chaque lancement d'agent enregistre un rapport ici.",
+    "goPipeline": "Aller au pipeline",
+    "noMatchTitle": "Aucun rapport ne correspond aux filtres",
+    "noMatchBody": "Modifiez ou effacez les filtres pour voir les autres rapports.",
+    "errorTitle": "Impossible de charger les rapports",
+    "errorBody": "Vérifiez votre connexion puis réessayez.",
+    "historyWarning": "L'historique des rapports n'a pas pu être chargé : les états affichés peuvent être incomplets.",
+    "localOnly": "Non enregistré",
+    "invalidRange": "La date de fin est avant la date de début."
+  },
+  "reportStatus": {
+    "new": "Nouveau",
+    "in_progress": "En cours",
+    "done": "Traité",
+    "archived": "Archivé"
+  },
+  "loadError": {
+    "title": "Impossible de charger le corpus",
+    "body": "Les agents ont besoin du corpus pour travailler. Vérifiez votre connexion puis réessayez."
+  },
+  "relative": {
+    "justNow": "à l'instant"
+  }
+}
