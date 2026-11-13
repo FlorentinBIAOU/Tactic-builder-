@@ -94,5 +94,25 @@
     "title": "Accès réservé aux administrateurs",
     "body": "Votre compte {{email}} n'a pas le rôle administrateur. Demandez à un administrateur de vous l'attribuer depuis la page Équipe.",
     "noProfile": "Impossible de lire votre profil. Vérifiez votre connexion puis réessayez."
+  },
+  "messages": {
+    "moduleDeleted": "Module supprimé. Ses leçons sont conservées, sans module.",
+    "domainDeleted": "Domaine supprimé. Ses modules sont conservés, sans domaine.",
+    "domainRenamed": "Domaine « {{from}} » renommé en « {{to}} ».",
+    "seedImported": "{{lessons}} leçons et {{modules}} modules ajoutés. {{skipped}} leçons existaient déjà et n'ont pas été modifiées.",
+    "syllabusImported": "{{domains}} domaines, {{modules}} modules et {{lessons}} leçons ajoutés. L'existant n'a pas été modifié.",
+    "errUnknown": "Erreur inconnue. Réessayez.",
+    "errNotInstalled": "La base de données n'est pas à jour : les tables du corpus sont introuvables. Demandez à l'équipe technique d'appliquer les migrations.",
+    "errPermission": "Action refusée : il faut le rôle administrateur.",
+    "errConflict": "Cette leçon a été modifiée par quelqu'un d'autre depuis que vous l'avez ouverte. Rechargez la page pour récupérer la dernière version, puis refaites vos changements.",
+    "errInvalid": "Valeur refusée : vérifiez les liens et les nombres.",
+    "errNetwork": "Le serveur ne répond pas. Vérifiez votre connexion et réessayez.",
+    "errGeneric": "L'opération a échoué : {{detail}}",
+    "aiQuota": "Limite quotidienne d'utilisation de l'IA atteinte. Réessayez demain.",
+    "aiTooLarge": "La demande envoyée à l'IA est trop longue. Réduisez le contenu et réessayez.",
+    "aiFailed": "Le service d'IA n'a pas pu répondre. Réessayez dans un instant.",
+    "aiBadAnswer": "La réponse de l'IA n'a pas pu être lue. Réessayez.",
+    "fileTooLarge": "Le fichier dépasse 25 Mo.",
+    "unsafeLink": "Le lien doit commencer par http:// ou https://."
   }
 }

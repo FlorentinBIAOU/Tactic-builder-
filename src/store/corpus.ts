@@ -8,6 +8,7 @@ import { create } from 'zustand';
 import * as api from '@/lib/corpus';
 import { corpusErrorMessage } from '@/lib/corpus';
 import { toast } from '@/components/Toast';
+import i18n from '@/i18n';
 import type { Domain, Lesson, Level, Track } from '@/lib/types';
 
 type CorpusState = {
@@ -41,6 +42,8 @@ type CorpusState = {
   closePreview: () => void;
 
   saveLesson: (lesson: Lesson) => Promise<boolean>;
+  /** Same as saveLesson, but returns the saved lesson (fresh updatedAt, final id). */
+  persistLesson: (lesson: Lesson) => Promise<Lesson | null>;
   deleteLesson: (id: string) => Promise<void>;
   duplicateLesson: (id: string) => Promise<void>;
   saveTrack: (track: Track) => Promise<Track | null>;
@@ -101,7 +104,9 @@ export const useCorpus = create<CorpusState>((set, get) => ({
   openPreview: (lesson) => set({ previewLesson: lesson }),
   closePreview: () => set({ previewLesson: null }),
 
-  saveLesson: async (lesson) => {
+  saveLesson: async (lesson) => !!(await get().persistLesson(lesson)),
+
+  persistLesson: async (lesson) => {
     try {
       const exists = get().lessons.some((l) => l.id === lesson.id);
       let saved: Lesson;
@@ -131,11 +136,11 @@ export const useCorpus = create<CorpusState>((set, get) => ({
             : [...s.lessons, saved],
         };
       });
-      toast(`Saved "${saved.name}"`, 'success');
-      return true;
+      toast(i18n.t('lessons:toasts.saved', { name: saved.name }), 'success');
+      return saved;
     } catch (err) {
       toast(corpusErrorMessage(err), 'error');
-      return false;
+      return null;
     }
   },
 
@@ -143,7 +148,7 @@ export const useCorpus = create<CorpusState>((set, get) => ({
     try {
       await api.deleteLesson(id);
       set((s) => ({ lessons: s.lessons.filter((l) => l.id !== id) }));
-      toast('Lesson deleted', 'info');
+      toast(i18n.t('lessons:toasts.deleted'), 'info');
     } catch (err) {
       toast(corpusErrorMessage(err), 'error');
     }
@@ -153,17 +158,22 @@ export const useCorpus = create<CorpusState>((set, get) => ({
     const src = get().lessons.find((l) => l.id === id);
     if (!src) return;
     const newId = nextLessonId(src.id, get().lessons);
+    // A new row: no timestamps, or the first save of the copy would be
+    // mistaken for a conflicting edit.
+    const { createdAt: _c, updatedAt: _u, ...rest } = src;
+    void _c;
+    void _u;
     const copy: Lesson = {
-      ...src,
+      ...rest,
       id: newId,
-      name: `${src.name} (copy)`,
+      name: i18n.t('lessons:copyName', { name: src.name }),
       status: 'draft',
       blocks: src.blocks.map((b) => ({ ...b })),
       quizzes: src.quizzes.map((q) => ({ ...q, opts: [...q.opts] })),
       translations: { ...src.translations },
     };
-    const ok = await get().saveLesson(copy);
-    if (ok) get().openEditor(copy);
+    const saved = await get().persistLesson(copy);
+    if (saved) get().openEditor(saved);
   },
 
   saveTrack: async (track) => {
@@ -189,11 +199,12 @@ export const useCorpus = create<CorpusState>((set, get) => ({
       await api.deleteTrack(id);
       set((s) => ({
         tracks: s.tracks.filter((t) => t.id !== id),
-        // Detach lessons that pointed at the removed track.
-        lessons: s.lessons.map((l) => (l.trackId === id ? { ...l, trackId: null } : l)),
         trackFilter: s.trackFilter === id ? null : s.trackFilter,
       }));
-      toast('Module deleted', 'info');
+      // The database detached the module's lessons (and bumped their
+      // updated_at): reload them so the next edit is not seen as a conflict.
+      await get().load();
+      toast(i18n.t('messages.moduleDeleted'), 'info');
     } catch (err) {
       toast(corpusErrorMessage(err), 'error');
     }
@@ -207,7 +218,7 @@ export const useCorpus = create<CorpusState>((set, get) => ({
       set((s) => ({
         lessons: s.lessons.map((l) => (l.tag === oldTag ? { ...l, tag: next } : l)),
       }));
-      toast(`Domain "${oldTag}" → "${next}"`, 'success');
+      toast(i18n.t('messages.domainRenamed', { from: oldTag, to: next }), 'success');
     } catch (err) {
       toast(corpusErrorMessage(err), 'error');
     }
@@ -239,7 +250,7 @@ export const useCorpus = create<CorpusState>((set, get) => ({
         domains: s.domains.filter((d) => d.id !== id),
         tracks: s.tracks.map((t) => (t.domainId === id ? { ...t, domainId: null } : t)),
       }));
-      toast('Domain deleted', 'info');
+      toast(i18n.t('messages.domainDeleted'), 'info');
     } catch (err) {
       toast(corpusErrorMessage(err), 'error');
     }
@@ -251,7 +262,7 @@ export const useCorpus = create<CorpusState>((set, get) => ({
       const n = await api.insertLessons(lessons);
       await get().load();
       toast(
-        `Added ${n} lessons and ${t} modules. ${lessons.length - n} lessons already existed and were left unchanged.`,
+        i18n.t('messages.seedImported', { lessons: n, modules: t, skipped: lessons.length - n }),
         'success'
       );
       return true;
@@ -311,7 +322,7 @@ export const useCorpus = create<CorpusState>((set, get) => ({
       const n = await api.insertLessons(lessons);
       await get().load();
       toast(
-        `Added ${d} domains, ${t} modules, ${n} lessons. Existing items were left unchanged.`,
+        i18n.t('messages.syllabusImported', { domains: d, modules: t, lessons: n }),
         'success'
       );
       return true;

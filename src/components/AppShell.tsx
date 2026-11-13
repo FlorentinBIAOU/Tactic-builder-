@@ -10,8 +10,8 @@ import { Topbar } from '@/components/shell/Topbar';
 import { CommandPalette } from '@/components/shell/CommandPalette';
 import { AssistantPanel } from '@/components/shell/AssistantPanel';
 import { useShell } from '@/components/shell/store';
-import LessonEditorDrawer from '@/views/LessonEditorDrawer';
-import PreviewDrawer from '@/views/PreviewDrawer';
+import { LessonEditor } from '@/features/lessons/LessonEditor';
+import { PreviewSheet } from '@/features/lessons/PreviewSheet';
 
 function PageSkeleton() {
   return (
@@ -76,8 +76,8 @@ export default function AppShell() {
 
       <CommandPalette />
       <AssistantPanel />
-      <LessonEditorDrawer />
-      <PreviewDrawer />
+      <LessonEditor />
+      <PreviewSheet />
     </TooltipProvider>
   );
 }

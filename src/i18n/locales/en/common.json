@@ -94,5 +94,25 @@
     "title": "Administrators only",
     "body": "Your account {{email}} does not have the administrator role. Ask an administrator to grant it from the Team page.",
     "noProfile": "Your profile could not be read. Check your connection and try again."
+  },
+  "messages": {
+    "moduleDeleted": "Module deleted. Its lessons are kept, without a module.",
+    "domainDeleted": "Domain deleted. Its modules are kept, without a domain.",
+    "domainRenamed": "Domain “{{from}}” renamed to “{{to}}”.",
+    "seedImported": "Added {{lessons}} lessons and {{modules}} modules. {{skipped}} lessons already existed and were left unchanged.",
+    "syllabusImported": "Added {{domains}} domains, {{modules}} modules and {{lessons}} lessons. Existing items were left unchanged.",
+    "errUnknown": "Unknown error. Try again.",
+    "errNotInstalled": "The database is not up to date: the corpus tables are missing. Ask the technical team to apply the migrations.",
+    "errPermission": "Not allowed: the administrator role is required.",
+    "errConflict": "Someone else changed this lesson since you opened it. Reload the page to get the latest version, then redo your changes.",
+    "errInvalid": "Value refused: check links and numbers.",
+    "errNetwork": "The server is not responding. Check your connection and try again.",
+    "errGeneric": "The operation failed: {{detail}}",
+    "aiQuota": "Daily AI limit reached. Try again tomorrow.",
+    "aiTooLarge": "The request sent to the AI is too long. Shorten the content and try again.",
+    "aiFailed": "The AI service could not answer. Try again in a moment.",
+    "aiBadAnswer": "The AI answer could not be read. Try again.",
+    "fileTooLarge": "The file is larger than 25 MB.",
+    "unsafeLink": "The link must start with http:// or https://."
   }
 }

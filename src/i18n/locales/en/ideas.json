@@ -1,0 +1,54 @@
+{
+  "title": "Ideas",
+  "description": "The AI suggests lessons or modules based on the existing corpus. You choose what to keep.",
+  "mode": { "label": "Kind of ideas", "lessons": "Lessons", "modules": "Modules" },
+  "form": {
+    "domain": "Domain",
+    "domainModule": "Domain for the new module",
+    "allDomains": "All domains",
+    "noDomain": "No domain",
+    "theme": "Theme (optional)",
+    "themePlaceholder": "E.g. student budget, taxes, cognitive biases",
+    "module": "Module for the drafts (optional)",
+    "moduleNone": "None, choose it in the editor",
+    "avoidLessons_one": "The AI avoids the lesson already in this scope.",
+    "avoidLessons_other": "The AI avoids the {{count}} lessons already in this scope.",
+    "avoidModules_one": "The AI avoids the module already in the corpus.",
+    "avoidModules_other": "The AI avoids the {{count}} modules already in the corpus.",
+    "generate": "Suggest ideas",
+    "again": "Suggest other ideas",
+    "noDomains": "No domains yet. Import the syllabus to sort ideas by domain.",
+    "noDomainsAction": "Go to import"
+  },
+  "results": {
+    "lessons_one": "{{count}} lesson idea",
+    "lessons_other": "{{count}} lesson ideas",
+    "modules_one": "{{count}} module idea",
+    "modules_other": "{{count}} module ideas",
+    "scope": "Domain: {{domain}}",
+    "scopeModule": "Module: {{module}}",
+    "theme": "Theme: {{theme}}",
+    "loading": "The AI is preparing ideas…",
+    "createDraft": "Create the draft",
+    "createModule": "Create the module",
+    "draftOpened": "Opened in the editor",
+    "moduleCreated": "Module created",
+    "draftToast": "Draft opened in the editor. Save it to keep it.",
+    "moduleToast": "Module “{{name}}” created",
+    "none": "The AI returned no ideas. Try another theme or run it again."
+  },
+  "empty": {
+    "title": "No ideas yet",
+    "lessons": "Pick a domain, add a theme if you like, then ask for suggestions. Each idea can become a draft in one click.",
+    "modules": "Pick the domain that will hold the new modules, then ask for suggestions."
+  },
+  "error": {
+    "title": "The ideas could not be generated",
+    "body": "The AI service did not answer properly. Try again in a moment.",
+    "detail": "Details: {{error}}"
+  },
+  "loadError": {
+    "title": "The corpus could not be loaded",
+    "body": "The AI needs the corpus to avoid duplicates. Try again."
+  }
+}

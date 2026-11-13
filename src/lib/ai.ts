@@ -7,6 +7,7 @@
  */
 
 import { FunctionsHttpError } from '@supabase/supabase-js';
+import i18n from '@/i18n';
 import { supabase } from '@/lib/supabase';
 import type { ZodType, ZodTypeDef } from 'zod';
 import type { Block, Quiz, Translation } from '@/lib/types';
@@ -34,25 +35,32 @@ async function invoke<T>(
     if (error) {
       // Non-2xx answers carry a readable `error` in their JSON body.
       if (error instanceof FunctionsHttpError) {
+        const status = (error.context as Response).status;
+        if (status === 429) return { ok: false, error: i18n.t('messages.aiQuota') };
+        if (status === 413) return { ok: false, error: i18n.t('messages.aiTooLarge') };
+        if (status === 401 || status === 403) return { ok: false, error: i18n.t('messages.errPermission') };
         const b = await error.context.json().catch(() => null);
-        if (b && typeof b.error === 'string') return { ok: false, error: b.error };
+        // 400 = the server explains what is missing in the request.
+        if (status === 400 && b && typeof b.error === 'string') return { ok: false, error: b.error };
+        return { ok: false, error: i18n.t('messages.aiFailed') };
       }
-      return { ok: false, error: error.message ?? 'admin-ai call failed' };
+      return { ok: false, error: i18n.t('messages.errNetwork') };
     }
     if (data && typeof data === 'object' && (data as any).ok === true) {
       const parsed = schema.safeParse((data as any).data);
       if (!parsed.success) {
         console.error('admin-ai: unexpected answer shape', parsed.error.issues);
-        return { ok: false, error: 'The AI answer had an unexpected format. Try again.' };
+        return { ok: false, error: i18n.t('messages.aiBadAnswer') };
       }
       return { ok: true, data: parsed.data };
     }
     return {
       ok: false,
-      error: (data as any)?.error ?? 'admin-ai returned an unexpected payload',
+      error: i18n.t('messages.aiBadAnswer'),
     };
   } catch (err) {
-    return { ok: false, error: (err as Error).message ?? 'Network error' };
+    console.error('admin-ai call failed', err);
+    return { ok: false, error: i18n.t('messages.errNetwork') };
   }
 }
 

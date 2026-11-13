@@ -1,0 +1,54 @@
+{
+  "title": "Idées",
+  "description": "L'IA propose des leçons ou des modules à partir du corpus existant. Vous choisissez ce que vous gardez.",
+  "mode": { "label": "Type d'idées", "lessons": "Leçons", "modules": "Modules" },
+  "form": {
+    "domain": "Domaine",
+    "domainModule": "Domaine du nouveau module",
+    "allDomains": "Tous les domaines",
+    "noDomain": "Sans domaine",
+    "theme": "Thème (facultatif)",
+    "themePlaceholder": "Ex. : budget étudiant, impôts, biais psychologiques",
+    "module": "Module des brouillons (facultatif)",
+    "moduleNone": "Aucun, à choisir dans l'éditeur",
+    "avoidLessons_one": "L'IA évite la leçon déjà présente dans ce périmètre.",
+    "avoidLessons_other": "L'IA évite les {{count}} leçons déjà présentes dans ce périmètre.",
+    "avoidModules_one": "L'IA évite le module déjà présent dans le corpus.",
+    "avoidModules_other": "L'IA évite les {{count}} modules déjà présents dans le corpus.",
+    "generate": "Proposer des idées",
+    "again": "Proposer d'autres idées",
+    "noDomains": "Aucun domaine pour l'instant. Importez le programme pour classer les idées par domaine.",
+    "noDomainsAction": "Aller à l'import"
+  },
+  "results": {
+    "lessons_one": "{{count}} idée de leçon",
+    "lessons_other": "{{count}} idées de leçons",
+    "modules_one": "{{count}} idée de module",
+    "modules_other": "{{count}} idées de modules",
+    "scope": "Domaine : {{domain}}",
+    "scopeModule": "Module : {{module}}",
+    "theme": "Thème : {{theme}}",
+    "loading": "L'IA prépare des idées…",
+    "createDraft": "Créer le brouillon",
+    "createModule": "Créer le module",
+    "draftOpened": "Ouvert dans l'éditeur",
+    "moduleCreated": "Module créé",
+    "draftToast": "Brouillon ouvert dans l'éditeur. Enregistrez-le pour le garder.",
+    "moduleToast": "Module « {{name}} » créé",
+    "none": "L'IA n'a renvoyé aucune idée. Essayez un autre thème ou relancez."
+  },
+  "empty": {
+    "title": "Pas encore d'idées",
+    "lessons": "Choisissez un domaine, ajoutez un thème si vous voulez, puis lancez la proposition. Chaque idée peut devenir un brouillon en un clic.",
+    "modules": "Choisissez le domaine qui accueillera les nouveaux modules, puis lancez la proposition."
+  },
+  "error": {
+    "title": "Les idées n'ont pas pu être générées",
+    "body": "Le service d'IA n'a pas répondu correctement. Réessayez dans un instant.",
+    "detail": "Détail : {{error}}"
+  },
+  "loadError": {
+    "title": "Le corpus n'a pas pu être chargé",
+    "body": "L'IA a besoin du corpus pour éviter les doublons. Réessayez."
+  }
+}

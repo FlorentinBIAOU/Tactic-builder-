@@ -8,13 +8,14 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 
 // Each view is its own chunk, loaded on first visit.
 const AuthView = lazy(() => import('@/views/AuthView'));
-const ExploreView = lazy(() => import('@/views/ExploreView'));
-const ExportView = lazy(() => import('@/views/ExportView'));
+const LessonsView = lazy(() => import('@/features/lessons/LessonsView'));
+const ImportExportView = lazy(() => import('@/features/import-export/ImportExportView'));
 const StatsView = lazy(() => import('@/views/StatsView'));
-const IdeasView = lazy(() => import('@/views/IdeasView'));
+const IdeasView = lazy(() => import('@/features/ideas/IdeasView'));
 const AgentsView = lazy(() => import('@/views/AgentsView'));
 const MarketingView = lazy(() => import('@/views/MarketingView'));
-const ContentView = lazy(() => import('@/views/ContentView'));
+const StructureView = lazy(() => import('@/features/structure/StructureView'));
+const LibraryView = lazy(() => import('@/features/library/LibraryView'));
 const MembersView = lazy(() => import('@/views/MembersView'));
 
 export default function App() {
@@ -45,10 +46,10 @@ export default function App() {
           <Route index element={<Navigate to="/lessons" replace />} />
           {/* Dashboard page arrives in sprint 5; statistics until then. */}
           <Route path="/dashboard" element={<StatsView />} />
-          <Route path="/lessons" element={<ExploreView />} />
-          <Route path="/structure" element={<ContentView initialSection="modules" key="structure" />} />
-          <Route path="/library" element={<ContentView initialSection="library" key="library" />} />
-          <Route path="/import-export" element={<ExportView />} />
+          <Route path="/lessons" element={<LessonsView />} />
+          <Route path="/structure" element={<StructureView />} />
+          <Route path="/library" element={<LibraryView />} />
+          <Route path="/import-export" element={<ImportExportView />} />
           <Route path="/ideas" element={<IdeasView />} />
           <Route path="/agents" element={<AgentsView />} />
           <Route path="/stats" element={<StatsView />} />

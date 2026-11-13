@@ -1,0 +1,88 @@
+{
+  "title": "Import et export",
+  "description": "Ajoutez des leçons au corpus ou récupérez-le en fichier pour l'app mobile.",
+  "safe": {
+    "title": "Les imports n'écrasent jamais l'existant",
+    "body": "Seul ce qui manque est ajouté. Une leçon ou un module déjà présent (même identifiant) est ignoré, avec vos modifications intactes. Les leçons ajoutées arrivent en brouillon."
+  },
+  "import": {
+    "heading": "Importer",
+    "syllabus": {
+      "title": "Programme complet",
+      "body": "Crée la structure du programme officiel : domaines, modules et titres de leçons. Le contenu des leçons reste à écrire.",
+      "meta": "{{domains}} domaines, {{modules}} modules, {{lessons}} leçons",
+      "present_one": "{{count}} leçon du programme déjà dans le corpus",
+      "present_other": "{{count}} leçons du programme déjà dans le corpus",
+      "action": "Importer le programme",
+      "confirmTitle": "Importer le programme complet ?",
+      "confirmBody": "{{domains}} domaines, {{modules}} modules et {{lessons}} leçons seront ajoutés s'ils n'existent pas encore. Rien de ce qui existe ne sera modifié. Les nouvelles leçons arrivent en brouillon, sans contenu.",
+      "confirm": "Importer"
+    },
+    "seed": {
+      "title": "Corpus de départ",
+      "body": "Les leçons de la première version de TACTIC, avec leurs modules. Seuls les titres et réglages sont importés, pas le contenu.",
+      "meta": "{{lessons}} leçons, {{modules}} modules",
+      "present_one": "{{count}} leçon de départ déjà dans le corpus",
+      "present_other": "{{count}} leçons de départ déjà dans le corpus",
+      "action": "Importer le corpus de départ",
+      "confirmTitle": "Importer le corpus de départ ?",
+      "confirmBody": "{{lessons}} leçons et {{modules}} modules seront ajoutés s'ils n'existent pas encore. Rien de ce qui existe ne sera modifié. Les nouvelles leçons arrivent en brouillon.",
+      "confirm": "Importer"
+    },
+    "file": {
+      "title": "Fichier JSON depuis l'ordinateur",
+      "body": "Un fichier exporté depuis cette page, ou un corpus au même format. Vous verrez ce qui sera ajouté avant de confirmer.",
+      "action": "Choisir un fichier",
+      "reading": "Lecture du fichier…",
+      "errorTitle": "Ce fichier n'a pas pu être lu",
+      "errorJson": "Le fichier n'est pas un JSON valide. Vérifiez qu'il s'agit bien d'un export TACTIC.",
+      "errorEmpty": "Aucune leçon ni aucun module trouvé dans ce fichier.",
+      "errorSize": "Le fichier dépasse {{max}} Mo.",
+      "errorRead": "Le fichier n'a pas pu être ouvert. Réessayez avec un autre fichier."
+    },
+    "loadingCounts": "Calcul en cours…",
+    "busy": "Import en cours…"
+  },
+  "preview": {
+    "title": "Aperçu avant import",
+    "description": "Fichier : {{name}}",
+    "newLessons": "Leçons ajoutées",
+    "existingLessons": "Leçons déjà présentes, ignorées",
+    "newModules": "Modules ajoutés",
+    "existingModules": "Modules déjà présents, ignorés",
+    "drafts": "Les leçons ajoutées arrivent en brouillon : relisez-les avant de les publier.",
+    "detached_one": "{{count}} leçon fait référence à un module introuvable. Elle sera importée sans module.",
+    "detached_other": "{{count}} leçons font référence à un module introuvable. Elles seront importées sans module.",
+    "duplicates_one": "{{count}} élément en double dans le fichier n'est compté qu'une fois.",
+    "duplicates_other": "{{count}} éléments en double dans le fichier ne sont comptés qu'une fois.",
+    "nothing": "Tout le contenu de ce fichier existe déjà. Il n'y a rien à ajouter.",
+    "confirm_one": "Importer {{count}} leçon",
+    "confirm_other": "Importer {{count}} leçons",
+    "confirmModules": "Importer les modules"
+  },
+  "export": {
+    "heading": "Exporter",
+    "body": "Le corpus au format de l'app mobile, pour l'intégrer dans l'app ou le garder en sauvegarde. L'app peut aussi lire les leçons publiées directement en ligne.",
+    "lessons": "Leçons",
+    "modules": "Modules",
+    "published": "Publiées",
+    "drafts": "Brouillons",
+    "includeDrafts": "Inclure les brouillons",
+    "includeDraftsHint": "Désactivé : seules les leçons publiées et leurs modules sont exportés.",
+    "download": "Télécharger le fichier",
+    "copy": "Copier le JSON",
+    "copied": "JSON copié dans le presse-papier",
+    "copyFailed": "La copie n'a pas fonctionné. Utilisez « Télécharger le fichier ».",
+    "downloaded": "Fichier téléchargé",
+    "showPreview": "Afficher l'aperçu du fichier",
+    "hidePreview": "Masquer l'aperçu du fichier",
+    "previewTruncated": "Aperçu limité aux {{count}} premiers caractères. Le fichier complet fait {{size}}.",
+    "emptyTitle": "Rien à exporter pour l'instant",
+    "emptyBody": "Le corpus ne contient aucune leçon. Importez le programme ou le corpus de départ ci-dessus.",
+    "emptyPublished": "Aucune leçon publiée. Activez « Inclure les brouillons » pour exporter tout le corpus."
+  },
+  "loadError": {
+    "title": "Le corpus n'a pas pu être chargé",
+    "body": "Les imports et l'export sont indisponibles tant que le corpus n'est pas chargé, pour ne rien compter de travers."
+  }
+}
