@@ -1,18 +1,22 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
+import Loader from '@/components/Loader';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth } from '@/store/auth';
 import RequireAdmin from '@/components/RequireAdmin';
 import AppShell from '@/components/AppShell';
 import { ToastHost } from '@/components/Toast';
-import AuthView from '@/views/AuthView';
-import ExploreView from '@/views/ExploreView';
-import ExportView from '@/views/ExportView';
-import StatsView from '@/views/StatsView';
-import IdeasView from '@/views/IdeasView';
-import AgentsView from '@/views/AgentsView';
-import MarketingView from '@/views/MarketingView';
-import ContentView from '@/views/ContentView';
-import MembersView from '@/views/MembersView';
+import ErrorBoundary from '@/components/ErrorBoundary';
+
+// Each view is its own chunk, loaded on first visit.
+const AuthView = lazy(() => import('@/views/AuthView'));
+const ExploreView = lazy(() => import('@/views/ExploreView'));
+const ExportView = lazy(() => import('@/views/ExportView'));
+const StatsView = lazy(() => import('@/views/StatsView'));
+const IdeasView = lazy(() => import('@/views/IdeasView'));
+const AgentsView = lazy(() => import('@/views/AgentsView'));
+const MarketingView = lazy(() => import('@/views/MarketingView'));
+const ContentView = lazy(() => import('@/views/ContentView'));
+const MembersView = lazy(() => import('@/views/MembersView'));
 
 export default function App() {
   const init = useAuth((s) => s.init);
@@ -21,7 +25,16 @@ export default function App() {
   return (
     <>
       <Routes>
-        <Route path="/auth" element={<AuthView />} />
+        <Route
+          path="/auth"
+          element={
+            <ErrorBoundary>
+              <Suspense fallback={<Loader full />}>
+                <AuthView />
+              </Suspense>
+            </ErrorBoundary>
+          }
+        />
 
         <Route
           element={

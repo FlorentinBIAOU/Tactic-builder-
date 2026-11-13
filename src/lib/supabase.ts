@@ -20,7 +20,7 @@ export const isSupabaseConfigured =
   !SUPABASE_ANON_KEY.startsWith('YOUR_');
 
 if (!isSupabaseConfigured && import.meta.env.DEV) {
-  // eslint-disable-next-line no-console
+   
   console.warn(
     '[supabase] Missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY. ' +
       'Copy .env.example to .env.local and fill in the values.'

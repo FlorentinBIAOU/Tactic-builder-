@@ -74,7 +74,7 @@ export default function IdeasView() {
     }
   };
 
-  const useIdea = (idea: LessonIdea) => {
+  const openIdea = (idea: LessonIdea) => {
     openEditor({
       id: '',
       trackId: null,
@@ -163,7 +163,7 @@ export default function IdeasView() {
               </div>
               <div className={styles.cardName}>{i.name}</div>
               <div className={styles.cardWhy}>{i.why}</div>
-              <button className={styles.useBtn} onClick={() => useIdea(i)}>
+              <button className={styles.useBtn} onClick={() => openIdea(i)}>
                 Use this idea →
               </button>
             </div>

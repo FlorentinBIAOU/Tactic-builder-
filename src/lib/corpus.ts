@@ -22,6 +22,21 @@ import type { Domain, Lesson, Resource, Track } from './types';
 
 // ─── Reads ─────────────────────────────────────────────────────────────────
 
+/** PostgREST returns at most 1000 rows per request: read every page. */
+const PAGE = 1000;
+async function fetchAllPages<T>(
+  page: (from: number, to: number) => PromiseLike<{ data: unknown[] | null; error: unknown }>
+): Promise<T[]> {
+  const out: T[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await page(from, from + PAGE - 1);
+    if (error) throw error;
+    const rows = (data ?? []) as T[];
+    out.push(...rows);
+    if (rows.length < PAGE) return out;
+  }
+}
+
 export async function fetchTracks(): Promise<Track[]> {
   const { data, error } = await supabase
     .from('corpus_tracks')
@@ -32,12 +47,10 @@ export async function fetchTracks(): Promise<Track[]> {
 }
 
 export async function fetchLessons(): Promise<Lesson[]> {
-  const { data, error } = await supabase
-    .from('corpus_lessons')
-    .select('*')
-    .order('id', { ascending: true });
-  if (error) throw error;
-  return (data as LessonRow[]).map(rowToLesson);
+  const rows = await fetchAllPages<LessonRow>((from, to) =>
+    supabase.from('corpus_lessons').select('*').order('id', { ascending: true }).range(from, to)
+  );
+  return rows.map(rowToLesson);
 }
 
 export async function fetchDomains(): Promise<Domain[]> {
@@ -60,14 +73,37 @@ export async function fetchResources(): Promise<Resource[]> {
 
 // ─── Lesson writes ─────────────────────────────────────────────────────────
 
-export async function upsertLesson(lesson: Lesson): Promise<Lesson> {
+/** Thrown when the id of a new lesson is already taken in the database. */
+export class LessonIdTakenError extends Error {}
+/** Thrown when a lesson changed in the database since it was loaded. */
+export class LessonConflictError extends Error {}
+
+/** Create a lesson. Never overwrites: a taken id raises LessonIdTakenError. */
+export async function createLesson(lesson: Lesson): Promise<Lesson> {
   const { data, error } = await supabase
     .from('corpus_lessons')
-    .upsert(lessonToRow(lesson), { onConflict: 'id' })
+    .insert(lessonToRow(lesson))
     .select('*')
     .single();
-  if (error) throw error;
+  if (error) {
+    if ((error as { code?: string }).code === '23505') throw new LessonIdTakenError(lesson.id);
+    throw error;
+  }
   return rowToLesson(data as LessonRow);
+}
+
+/**
+ * Update a lesson only if it has not changed since it was loaded
+ * (`updatedAt` must still match). Raises LessonConflictError otherwise.
+ */
+export async function updateLesson(lesson: Lesson): Promise<Lesson> {
+  let q = supabase.from('corpus_lessons').update(lessonToRow(lesson)).eq('id', lesson.id);
+  if (lesson.updatedAt) q = q.eq('updated_at', lesson.updatedAt);
+  const { data, error } = await q.select('*');
+  if (error) throw error;
+  const rows = (data ?? []) as LessonRow[];
+  if (rows.length === 0) throw new LessonConflictError(lesson.id);
+  return rowToLesson(rows[0]);
 }
 
 /**
@@ -267,6 +303,9 @@ export function corpusErrorMessage(err: unknown): string {
   }
   if (e.code === '42501' || /row-level security/i.test(e.message ?? '')) {
     return 'Permission denied — admin role required.';
+  }
+  if (err instanceof LessonConflictError) {
+    return 'This lesson was changed by someone else since you opened it. Reload the page to get the latest version, then redo your changes.';
   }
   if (e.code === '23514') {
     return 'This value is not allowed (check links and numbers).';

@@ -42,7 +42,7 @@ export default function MembersView() {
 
   useEffect(() => {
     void refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   const changeRole = async (m: Member, role: AdminRole) => {

@@ -8,13 +8,27 @@
 
 import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import type { ZodType, ZodTypeDef } from 'zod';
 import type { Block, Quiz, Translation } from '@/lib/types';
+import {
+  agentReportSchema,
+  generatedContentSchema,
+  ideasSchema,
+  inviteSchema,
+  marketingSchema,
+  moduleIdeasSchema,
+  replySchema,
+  translateSchema,
+} from '@/lib/aiSchemas';
 
 export type AiResult<T> =
   | { ok: true; data: T }
   | { ok: false; error: string };
 
-async function invoke<T>(body: Record<string, unknown>): Promise<AiResult<T>> {
+async function invoke<T>(
+  body: Record<string, unknown>,
+  schema: ZodType<T, ZodTypeDef, unknown>
+): Promise<AiResult<T>> {
   try {
     const { data, error } = await supabase.functions.invoke('admin-ai', { body });
     if (error) {
@@ -26,7 +40,12 @@ async function invoke<T>(body: Record<string, unknown>): Promise<AiResult<T>> {
       return { ok: false, error: error.message ?? 'admin-ai call failed' };
     }
     if (data && typeof data === 'object' && (data as any).ok === true) {
-      return { ok: true, data: (data as any).data as T };
+      const parsed = schema.safeParse((data as any).data);
+      if (!parsed.success) {
+        console.error('admin-ai: unexpected answer shape', parsed.error.issues);
+        return { ok: false, error: 'The AI answer had an unexpected format. Try again.' };
+      }
+      return { ok: true, data: parsed.data };
     }
     return {
       ok: false,
@@ -51,7 +70,7 @@ export function aiGenerateContent(input: {
   track?: string;
   duration?: string;
 }): Promise<AiResult<GeneratedContent>> {
-  return invoke<GeneratedContent>({ task: 'generate_content', lesson: input });
+  return invoke({ task: 'generate_content', lesson: input }, generatedContentSchema);
 }
 
 // ─── translate ────────────────────────────────────────────────────────────
@@ -65,7 +84,7 @@ export function aiTranslate(input: {
   langs: ('en' | 'es')[];
   lesson: { title: string; blocks: Block[]; quizzes: Quiz[] };
 }): Promise<AiResult<TranslatePayload>> {
-  return invoke<TranslatePayload>({ task: 'translate', ...input });
+  return invoke({ task: 'translate', ...input }, translateSchema);
 }
 
 // ─── ideas ────────────────────────────────────────────────────────────────
@@ -78,7 +97,7 @@ export function aiLessonIdeas(input: {
   theme?: string;
   existing?: string[];
 }): Promise<AiResult<{ ideas: LessonIdea[] }>> {
-  return invoke({ task: 'lesson_ideas', ...input });
+  return invoke({ task: 'lesson_ideas', ...input }, ideasSchema);
 }
 
 /** Generate lesson drafts from the course syllabus text. */
@@ -87,14 +106,14 @@ export function aiSyllabusLessons(input: {
   syllabus: string;
   existing?: string[];
 }): Promise<AiResult<{ ideas: LessonIdea[] }>> {
-  return invoke({ task: 'syllabus_lessons', ...input });
+  return invoke({ task: 'syllabus_lessons', ...input }, ideasSchema);
 }
 
 export function aiModuleIdeas(input: {
   level: string;
   existing?: string[];
 }): Promise<AiResult<{ ideas: ModuleIdea[] }>> {
-  return invoke({ task: 'module_ideas', ...input });
+  return invoke({ task: 'module_ideas', ...input }, moduleIdeasSchema);
 }
 
 // ─── agents ───────────────────────────────────────────────────────────────
@@ -126,7 +145,7 @@ export function aiRunAgent(input: {
   /** Arbitrary extra context (performance, syllabus coverage, upstream reports…). */
   context?: Record<string, unknown>;
 }): Promise<AiResult<AgentReport>> {
-  return invoke<AgentReport>({ task: 'run_agent', ...input });
+  return invoke({ task: 'run_agent', ...input }, agentReportSchema);
 }
 
 // ─── marketing ────────────────────────────────────────────────────────────
@@ -143,7 +162,7 @@ export function aiMarketing(input: {
   audience?: string;
   goal?: string;
 }): Promise<AiResult<MarketingCopy>> {
-  return invoke<MarketingCopy>({ task: 'marketing', ...input });
+  return invoke({ task: 'marketing', ...input }, marketingSchema);
 }
 
 // ─── invite (admin panel) ─────────────────────────────────────────────────
@@ -152,7 +171,7 @@ export function aiInvite(input: {
   email: string;
   role: string;
 }): Promise<AiResult<{ invited: string }>> {
-  return invoke<{ invited: string }>({ task: 'invite', ...input });
+  return invoke({ task: 'invite', ...input }, inviteSchema);
 }
 
 // ─── Robot Tact assistant ─────────────────────────────────────────────────
@@ -164,5 +183,5 @@ export function aiAssistant(input: {
   history?: ChatTurn[];
   context?: Record<string, unknown>;
 }): Promise<AiResult<{ reply: string }>> {
-  return invoke<{ reply: string }>({ task: 'assistant', ...input });
+  return invoke({ task: 'assistant', ...input }, replySchema);
 }

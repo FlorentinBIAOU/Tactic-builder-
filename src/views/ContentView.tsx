@@ -221,7 +221,7 @@ function SyllabusPanel({
     setConfirmImport(false);
   };
 
-  const useIdea = (idea: LessonIdea) => {
+  const openIdea = (idea: LessonIdea) => {
     openEditor({
       id: '',
       trackId: null,
@@ -331,7 +331,7 @@ function SyllabusPanel({
               </div>
               <div className={styles.ideaName}>{i.name}</div>
               {i.summary ? <div className={styles.ideaSummary}>{i.summary}</div> : null}
-              <button className={styles.useBtn} onClick={() => useIdea(i)}>
+              <button className={styles.useBtn} onClick={() => openIdea(i)}>
                 Edit &amp; save →
               </button>
             </div>

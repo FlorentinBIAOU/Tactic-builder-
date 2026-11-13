@@ -21,7 +21,13 @@ edge function). Deployable on **Vercel**.
 npm install
 cp .env.example .env.local   # then fill in the values (already provided for the shared project)
 npm run dev                  # → http://localhost:5173
+npm run lint                 # ESLint
+npm test                     # unit tests (Vitest)
 ```
+
+CI (`.github/workflows/ci.yml`) runs lint, typecheck, tests and build, and
+applies every migration twice on Postgres 16 before running
+`supabase/tests/smoke.sql`.
 
 `.env.local` needs:
 

@@ -1,3 +1,4 @@
+import { removeQuizOption } from '@/lib/lessonRules';
 import type { Quiz } from '@/lib/types';
 import styles from './QuizEditor.module.css';
 
@@ -23,10 +24,7 @@ export default function QuizEditor({ quiz, index, onChange, onDelete }: Props) {
   };
   const delOpt = (i: number) => {
     if (quiz.opts.length <= 2) return;
-    const opts = quiz.opts.filter((_, k) => k !== i);
-    // Keep the same option marked correct: shift the index when an earlier
-    // option is removed; fall back to the first option if it was removed.
-    const correct = i < quiz.correct ? quiz.correct - 1 : i === quiz.correct ? 0 : quiz.correct;
+    const { opts, correct } = removeQuizOption(quiz, i);
     onChange({ opts, correct });
   };
 

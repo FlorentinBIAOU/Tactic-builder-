@@ -8,7 +8,6 @@ import { create } from 'zustand';
 import * as api from '@/lib/corpus';
 import { corpusErrorMessage } from '@/lib/corpus';
 import { toast } from '@/components/Toast';
-import { SYLLABUS, domainId, moduleId, lessonId } from '@/lib/syllabus';
 import type { Domain, Lesson, Level, Track } from '@/lib/types';
 
 type CorpusState = {
@@ -104,7 +103,26 @@ export const useCorpus = create<CorpusState>((set, get) => ({
 
   saveLesson: async (lesson) => {
     try {
-      const saved = await api.upsertLesson(lesson);
+      const exists = get().lessons.some((l) => l.id === lesson.id);
+      let saved: Lesson;
+      if (exists) {
+        saved = await api.updateLesson(lesson);
+      } else {
+        // New lesson: if another admin took the id meanwhile, pick the next
+        // free one instead of overwriting their lesson.
+        let candidate = lesson;
+        const taken = [...get().lessons];
+        for (let attempt = 0; ; attempt++) {
+          try {
+            saved = await api.createLesson(candidate);
+            break;
+          } catch (err) {
+            if (!(err instanceof api.LessonIdTakenError) || attempt >= 4) throw err;
+            taken.push(candidate);
+            candidate = { ...candidate, id: nextLessonId(candidate.id, taken) };
+          }
+        }
+      }
       set((s) => {
         const exists = s.lessons.some((l) => l.id === saved.id);
         return {
@@ -245,6 +263,8 @@ export const useCorpus = create<CorpusState>((set, get) => ({
 
   importSyllabus: async () => {
     try {
+      // Loaded on demand: the syllabus is large and only needed here.
+      const { SYLLABUS, domainId, moduleId, lessonId } = await import('@/lib/syllabus');
       const domains: Domain[] = SYLLABUS.map((d, i) => ({
         id: domainId(d.code),
         code: d.code,
