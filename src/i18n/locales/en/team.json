@@ -1,0 +1,138 @@
+{
+  "title": "Team",
+  "description": "The people who work on the corpus, their role and the history of changes.",
+  "actions": {
+    "invite": "Invite a member",
+    "promote": "Add an existing account",
+    "changeRole": "Change role",
+    "copyEmail": "Copy email address",
+    "removeFromTeam": "Remove from team",
+    "loadMore": "Show more",
+    "memberActions": "Actions for {{name}}"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "ped": "Pedagogy",
+    "ux": "UX",
+    "data": "Data",
+    "learner": "Learner"
+  },
+  "roleInfo": {
+    "admin": "Opens the tool and can do everything: lessons, structure, AI, statistics, marketing and team management.",
+    "ped": "For people who write and review lessons.",
+    "ux": "For people who work on the mobile app experience.",
+    "data": "For people who follow statistics and learner progress.",
+    "learner": "Mobile app account, no role in the team."
+  },
+  "access": {
+    "full": "Access to the tool",
+    "label": "Label only",
+    "none": "No access to the tool"
+  },
+  "honesty": {
+    "title": "Only administrators can open the tool today",
+    "body": "The Pedagogy, UX and Data roles are labels that show who does what. They do not give access to the tool yet."
+  },
+  "members": {
+    "title": "Team members",
+    "count_one": "{{count}} person with a role",
+    "count_other": "{{count}} people with a role",
+    "colMember": "Member",
+    "colRole": "Role",
+    "colJoined": "Account created",
+    "colActions": "Actions",
+    "you": "You",
+    "noName": "No name",
+    "since": "Since {{date}}",
+    "selfLocked": "Another administrator must change your role.",
+    "shown": "{{shown}} of {{total}} shown",
+    "emptyTitle": "Nobody has a role yet",
+    "emptyBody": "Invite someone from the team, or give a role to an account that already exists.",
+    "emailCopied": "Email address copied",
+    "copyFailed": "Could not copy the address. Select it by hand."
+  },
+  "rolesPanel": {
+    "title": "Roles",
+    "description": "What each role gives."
+  },
+  "roleDialog": {
+    "title": "Change role",
+    "description": "Choose the role of {{name}}.",
+    "legend": "Role",
+    "current": "Current role",
+    "continue": "Continue",
+    "confirmTitle": "Make {{name}} {{role}}?",
+    "confirmRemoveTitle": "Remove {{name}} from the team?",
+    "confirm": "Change to {{role}}",
+    "confirmRemove": "Remove from team",
+    "toAdmin": "This person will be able to open the tool and change everything, including team roles.",
+    "fromAdmin": "This person will no longer be able to open the tool. They keep the {{role}} label in the team.",
+    "toLearner": "This person will no longer appear in the team. Their mobile app account does not change.",
+    "toLearnerFromAdmin": "This person will no longer be able to open the tool and will no longer appear in the team. Their mobile app account does not change.",
+    "fromLearner": "This person will appear in the team with the {{role}} label. They will not have access to the tool.",
+    "labelOnly": "Only the label changes. Access to the tool stays the same: none today.",
+    "done": "{{name}} is now {{role}}",
+    "removed": "{{name}} was removed from the team"
+  },
+  "invite": {
+    "title": "Invite a member",
+    "description": "The person receives an email to set their password.",
+    "email": "Email address",
+    "emailPlaceholder": "first.last@example.com",
+    "role": "Role",
+    "adminHint": "To make someone an Administrator, invite them first, then change their role in the list.",
+    "submit": "Send invitation",
+    "sent": "Invitation sent to {{email}}",
+    "invalidEmail": "Enter a valid email address, for example first.last@example.com.",
+    "alreadyExists": "This address probably already has an account. Find it to give it a role.",
+    "findAccount": "Find this account",
+    "failed": "The invitation could not be sent. Check the address and try again.",
+    "failedDetail": "Detail: {{error}}",
+    "partialTitle": "Invitation sent to {{email}}, but the role was not saved",
+    "partialBody": "The person can sign in, but does not have the {{role}} role yet. Find their account to give it to them.",
+    "partialAction": "Give the role",
+    "discardTitle": "Discard the invitation?",
+    "discardBody": "The address you typed will be lost.",
+    "discard": "Discard",
+    "keepEditing": "Keep editing"
+  },
+  "promote": {
+    "title": "Add an existing account",
+    "description": "Search for someone who already has an account, for example on the mobile app, to give them a role.",
+    "search": "Search for an account",
+    "searchPlaceholder": "Email or name",
+    "hint": "Type at least 2 characters.",
+    "emptyTitle": "No account matches “{{query}}”",
+    "emptyBody": "Check the spelling, or invite this person if they do not have an account yet.",
+    "inviteInstead": "Invite this person",
+    "more": "Showing {{shown}} of {{total}} accounts. Refine the search to find the right person.",
+    "results_one": "{{count}} account found",
+    "results_other": "{{count}} accounts found",
+    "chooseRole": "Choose a role"
+  },
+  "activity": {
+    "title": "Activity log",
+    "description": "Role changes and invitations, newest first.",
+    "setRole": "<b>{{actor}}</b> moved <b>{{target}}</b> to {{role}}",
+    "removed": "<b>{{actor}}</b> removed <b>{{target}}</b> from the team",
+    "invite": "<b>{{actor}}</b> invited <b>{{target}}</b> as {{role}}",
+    "inviteNoRole": "<b>{{actor}}</b> invited <b>{{target}}</b>",
+    "other": "<b>{{actor}}</b> made another admin change to <b>{{target}}</b>",
+    "someone": "An administrator",
+    "unknownTarget": "an account",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "emptyTitle": "No activity yet",
+    "emptyBody": "Role changes and invitations will appear here."
+  },
+  "errors": {
+    "load": "The team list could not be loaded. Check your connection and try again.",
+    "loadActivity": "The activity log could not be loaded.",
+    "search": "The search did not go through. Check your connection and try again.",
+    "missingMigration": "The database is not up to date for this page. A developer needs to apply the 0008_team.sql migration.",
+    "forbidden": "Your account no longer has the administrator role. Reload the page.",
+    "lastAdmin": "Not possible: there must always be at least one administrator.",
+    "unknownMember": "This account no longer exists. Refresh the list.",
+    "roleFailed": "The role could not be changed. Try again in a moment."
+  }
+}

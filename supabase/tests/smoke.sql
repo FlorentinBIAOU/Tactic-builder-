@@ -89,4 +89,92 @@ begin
 end $$;
 reset role;
 
+-- Team page: admin_list_staff (0008)
+insert into auth.users select ('00000000-0000-0000-0001-' || lpad(g::text, 12, '0'))::uuid
+  from generate_series(1, 120) g on conflict do nothing;
+insert into public.profiles (id, email, full_name)
+  select ('00000000-0000-0000-0001-' || lpad(g::text, 12, '0'))::uuid, 'learner' || g || '@test', 'Learner ' || g
+  from generate_series(1, 120) g on conflict do nothing;
+insert into auth.users values ('00000000-0000-0000-0000-00000000000d') on conflict do nothing;
+insert into public.profiles (id, email, full_name)
+  values ('00000000-0000-0000-0000-00000000000d', 'odd_100%@test', 'Zoé Pédago') on conflict do nothing;
+
+-- Learner: refused
+set role authenticated;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000c';
+do $$ begin
+  begin
+    perform * from public.admin_list_staff();
+    raise exception 'FAIL: learner listed the staff';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+reset role;
+
+-- Anonymous: no execute grant
+set role anon;
+do $$ begin
+  begin
+    perform * from public.admin_list_staff();
+    raise exception 'FAIL: anon listed the staff';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+reset role;
+
+-- Admin
+set role authenticated;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+do $$
+declare
+  v_n     int;
+  v_total bigint;
+  v_first text;
+begin
+  perform public.admin_set_role('00000000-0000-0000-0000-00000000000b', 'ped');
+  perform public.admin_set_role('00000000-0000-0000-0000-00000000000d', 'data');
+
+  -- No search: staff only (a admin, b ped, d data), admin first, with a total.
+  select count(*), max(total_count) into v_n, v_total from public.admin_list_staff();
+  if v_n <> 3 or v_total <> v_n then
+    raise exception 'FAIL: staff list % rows, total %', v_n, v_total;
+  end if;
+  if exists (select 1 from public.admin_list_staff() where role = 'learner') then
+    raise exception 'FAIL: learner in the staff list';
+  end if;
+  select role into v_first from public.admin_list_staff() limit 1;
+  if v_first <> 'admin' then raise exception 'FAIL: admins not listed first (%)', v_first; end if;
+  if not exists (select 1 from public.admin_list_staff('  ') where email = 'b@test' and role = 'ped') then
+    raise exception 'FAIL: blank search is not the staff list';
+  end if;
+
+  -- Search covers learners too, by e-mail or name, case-insensitive.
+  if not exists (select 1 from public.admin_list_staff('C@TE') where email = 'c@test' and role = 'learner') then
+    raise exception 'FAIL: search by e-mail missed a learner';
+  end if;
+  if not exists (select 1 from public.admin_list_staff('zoé péd') where email = 'odd_100%@test') then
+    raise exception 'FAIL: search by name failed';
+  end if;
+
+  -- LIKE wildcards are matched literally.
+  select count(*) into v_n from public.admin_list_staff('%');
+  if v_n <> 1 then raise exception 'FAIL: %% wildcard not escaped (% rows)', v_n; end if;
+  select count(*) into v_n from public.admin_list_staff('r_1');  -- unescaped, would match 'Learner 1…'
+  if v_n <> 0 then raise exception 'FAIL: _ wildcard not escaped (% rows)', v_n; end if;
+  select count(*) into v_n from public.admin_list_staff('d_1');
+  if v_n <> 1 then raise exception 'FAIL: literal _ not found (% rows)', v_n; end if;
+
+  -- Bounded paging, total before paging.
+  select count(*), max(total_count) into v_n, v_total from public.admin_list_staff('learner', 100000, 0);
+  if v_n <> 100 or v_total < 120 then raise exception 'FAIL: limit not capped (% rows, total %)', v_n, v_total; end if;
+  select count(*) into v_n from public.admin_list_staff('learner', 0, -5);
+  if v_n <> 1 then raise exception 'FAIL: limit/offset not floored (% rows)', v_n; end if;
+  select count(*) into v_n from public.admin_list_staff('learner', 50, 100);
+  if v_n <> (v_total - 100) then raise exception 'FAIL: offset paging (% rows)', v_n; end if;
+  if (select count(*) from public.admin_list_staff(repeat('x', 5000))) <> 0 then
+    raise exception 'FAIL: long search not handled';
+  end if;
+end $$;
+reset role;
+
 select 'smoke tests passed' as result;

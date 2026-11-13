@@ -48,6 +48,7 @@ Apply the migrations, in order, to the shared project:
 | `0005_events.sql`                  | `lesson_events` / `trading_sim_results` / `marketing_touchpoints` + RPCs `admin_lesson_time` / `admin_lesson_funnel` / `admin_retention` / `admin_quiz_trading_corr` / `admin_channel_attribution` (real learning + attribution analytics) |
 | `0006_domains.sql`                 | `corpus_domains` (Domain → Module → Lesson), `corpus_tracks.domain_id` + `core_question`, public `resources` Storage bucket for file uploads |
 | `0007_security_data_fixes.sql`     | Locks `profiles.role` (only `admin_set_role` / service role can change it), last-admin race fix, read-only audit log for clients, bounds + `is_demo` on event tables, fixed `admin_lesson_funnel`, D+N retention cohorts, `admin_demo_status()`, lessons default to `draft`, http(s)-only resource links, Storage size/type limits, AI quota (`admin_ai_usage`, `admin_ai_consume`) |
+| `0008_team.sql`                    | `admin_list_staff()` — team members (non-learners) with search and paging, for the Team page |
 
 **Option A — SQL editor (recommended):** paste each file into the Supabase
 dashboard → SQL editor and run it (all are idempotent).

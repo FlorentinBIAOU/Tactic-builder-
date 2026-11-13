@@ -1,0 +1,138 @@
+{
+  "title": "Équipe",
+  "description": "Les personnes qui travaillent sur le corpus, leur rôle et l'historique des changements.",
+  "actions": {
+    "invite": "Inviter un membre",
+    "promote": "Ajouter un compte existant",
+    "changeRole": "Changer le rôle",
+    "copyEmail": "Copier l'adresse e-mail",
+    "removeFromTeam": "Retirer de l'équipe",
+    "loadMore": "Afficher plus",
+    "memberActions": "Actions pour {{name}}"
+  },
+  "roles": {
+    "admin": "Administrateur",
+    "ped": "Pédagogie",
+    "ux": "UX",
+    "data": "Data",
+    "learner": "Apprenant"
+  },
+  "roleInfo": {
+    "admin": "Ouvre l'outil et peut tout faire : leçons, structure, IA, statistiques, marketing et gestion de l'équipe.",
+    "ped": "Pour les personnes qui écrivent et relisent les leçons.",
+    "ux": "Pour les personnes qui travaillent sur l'expérience de l'app mobile.",
+    "data": "Pour les personnes qui suivent les statistiques et la progression des apprenants.",
+    "learner": "Compte de l'app mobile, sans rôle dans l'équipe."
+  },
+  "access": {
+    "full": "Accès à l'outil",
+    "label": "Étiquette seulement",
+    "none": "Aucun accès à l'outil"
+  },
+  "honesty": {
+    "title": "Seuls les administrateurs ouvrent l'outil aujourd'hui",
+    "body": "Les rôles Pédagogie, UX et Data servent d'étiquette pour savoir qui fait quoi. Ils ne donnent pas encore accès à l'outil."
+  },
+  "members": {
+    "title": "Membres de l'équipe",
+    "count_one": "{{count}} personne avec un rôle",
+    "count_other": "{{count}} personnes avec un rôle",
+    "colMember": "Membre",
+    "colRole": "Rôle",
+    "colJoined": "Compte créé le",
+    "colActions": "Actions",
+    "you": "Vous",
+    "noName": "Sans nom",
+    "since": "Depuis le {{date}}",
+    "selfLocked": "Un autre administrateur doit changer votre rôle.",
+    "shown": "{{shown}} sur {{total}} affichés",
+    "emptyTitle": "Personne n'a encore de rôle",
+    "emptyBody": "Invitez une personne de l'équipe, ou donnez un rôle à un compte qui existe déjà.",
+    "emailCopied": "Adresse e-mail copiée",
+    "copyFailed": "Impossible de copier l'adresse. Sélectionnez-la à la main."
+  },
+  "rolesPanel": {
+    "title": "Les rôles",
+    "description": "Ce que donne chaque rôle."
+  },
+  "roleDialog": {
+    "title": "Changer le rôle",
+    "description": "Choisissez le rôle de {{name}}.",
+    "legend": "Rôle",
+    "current": "Rôle actuel",
+    "continue": "Continuer",
+    "confirmTitle": "Passer {{name}} en {{role}} ?",
+    "confirmRemoveTitle": "Retirer {{name}} de l'équipe ?",
+    "confirm": "Passer en {{role}}",
+    "confirmRemove": "Retirer de l'équipe",
+    "toAdmin": "Cette personne pourra ouvrir l'outil et tout modifier, y compris les rôles de l'équipe.",
+    "fromAdmin": "Cette personne ne pourra plus ouvrir l'outil. Elle garde l'étiquette {{role}} dans l'équipe.",
+    "toLearner": "Cette personne n'apparaîtra plus dans l'équipe. Son compte de l'app mobile ne change pas.",
+    "toLearnerFromAdmin": "Cette personne ne pourra plus ouvrir l'outil et n'apparaîtra plus dans l'équipe. Son compte de l'app mobile ne change pas.",
+    "fromLearner": "Cette personne apparaîtra dans l'équipe avec l'étiquette {{role}}. Elle n'aura pas accès à l'outil.",
+    "labelOnly": "Seule l'étiquette change. L'accès à l'outil reste le même : aucun aujourd'hui.",
+    "done": "Nouveau rôle de {{name}} : {{role}}",
+    "removed": "{{name}} ne fait plus partie de l'équipe"
+  },
+  "invite": {
+    "title": "Inviter un membre",
+    "description": "La personne reçoit un e-mail pour créer son mot de passe.",
+    "email": "Adresse e-mail",
+    "emailPlaceholder": "prenom.nom@exemple.fr",
+    "role": "Rôle",
+    "adminHint": "Pour donner le rôle Administrateur, invitez d'abord la personne, puis changez son rôle dans la liste.",
+    "submit": "Envoyer l'invitation",
+    "sent": "Invitation envoyée à {{email}}",
+    "invalidEmail": "Saisissez une adresse e-mail valide, par exemple prenom.nom@exemple.fr.",
+    "alreadyExists": "Cette adresse a sans doute déjà un compte. Retrouvez-le pour lui donner un rôle.",
+    "findAccount": "Retrouver ce compte",
+    "failed": "L'invitation n'a pas pu être envoyée. Vérifiez l'adresse puis réessayez.",
+    "failedDetail": "Détail : {{error}}",
+    "partialTitle": "Invitation envoyée à {{email}}, mais le rôle n'a pas été enregistré",
+    "partialBody": "La personne peut se connecter, mais elle n'a pas encore le rôle {{role}}. Retrouvez son compte pour le lui donner.",
+    "partialAction": "Donner le rôle",
+    "discardTitle": "Abandonner l'invitation ?",
+    "discardBody": "L'adresse saisie sera perdue.",
+    "discard": "Abandonner",
+    "keepEditing": "Continuer la saisie"
+  },
+  "promote": {
+    "title": "Ajouter un compte existant",
+    "description": "Cherchez une personne qui a déjà un compte, par exemple sur l'app mobile, pour lui donner un rôle.",
+    "search": "Rechercher un compte",
+    "searchPlaceholder": "E-mail ou nom",
+    "hint": "Saisissez au moins 2 caractères.",
+    "emptyTitle": "Aucun compte ne correspond à « {{query}} »",
+    "emptyBody": "Vérifiez l'orthographe, ou invitez cette personne si elle n'a pas encore de compte.",
+    "inviteInstead": "Inviter cette personne",
+    "more": "{{shown}} comptes affichés sur {{total}}. Précisez la recherche pour trouver la bonne personne.",
+    "results_one": "{{count}} compte trouvé",
+    "results_other": "{{count}} comptes trouvés",
+    "chooseRole": "Choisir un rôle"
+  },
+  "activity": {
+    "title": "Journal d'activité",
+    "description": "Changements de rôle et invitations, du plus récent au plus ancien.",
+    "setRole": "<b>{{actor}}</b> a passé <b>{{target}}</b> en {{role}}",
+    "removed": "<b>{{actor}}</b> a retiré <b>{{target}}</b> de l'équipe",
+    "invite": "<b>{{actor}}</b> a invité <b>{{target}}</b> avec le rôle {{role}}",
+    "inviteNoRole": "<b>{{actor}}</b> a invité <b>{{target}}</b>",
+    "other": "<b>{{actor}}</b> a fait une autre action d'administration sur <b>{{target}}</b>",
+    "someone": "Un administrateur",
+    "unknownTarget": "un compte",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "emptyTitle": "Aucune activité pour l'instant",
+    "emptyBody": "Les changements de rôle et les invitations apparaîtront ici."
+  },
+  "errors": {
+    "load": "La liste de l'équipe n'a pas pu être chargée. Vérifiez votre connexion puis réessayez.",
+    "loadActivity": "Le journal d'activité n'a pas pu être chargé.",
+    "search": "La recherche n'a pas abouti. Vérifiez votre connexion puis réessayez.",
+    "missingMigration": "La base de données n'est pas à jour pour cette page. Un développeur doit appliquer la migration 0008_team.sql.",
+    "forbidden": "Votre compte n'a plus le rôle administrateur. Rechargez la page.",
+    "lastAdmin": "Impossible : il doit toujours rester au moins un administrateur.",
+    "unknownMember": "Ce compte n'existe plus. Actualisez la liste.",
+    "roleFailed": "Le rôle n'a pas pu être changé. Réessayez dans un instant."
+  }
+}

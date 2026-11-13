@@ -1,0 +1,234 @@
+{
+  "title": "Agents",
+  "description": "Eleven agents analyse the corpus and suggest plans. Each stage builds on the reports of the one before; nothing is published without the team.",
+  "tabs": {
+    "pipeline": "Pipeline",
+    "reports": "Reports",
+    "reportsCount": "Reports ({{count}})"
+  },
+  "stages": {
+    "analysis": {
+      "name": "Analysis",
+      "hint": "What exists: corpus, syllabus, learner results."
+    },
+    "planning": {
+      "name": "Planning",
+      "hint": "Who is learning and what to do first."
+    },
+    "production": {
+      "name": "Production",
+      "hint": "Content to create, news, missions."
+    },
+    "distribution": {
+      "name": "Distribution",
+      "hint": "Promotion and notifications to learners."
+    },
+    "supervision": {
+      "name": "TACT supervision",
+      "hint": "Cross-review of every report."
+    }
+  },
+  "agent": {
+    "corpus": {
+      "name": "Corpus",
+      "mission": "Takes stock of the corpus: empty or overloaded modules, duplicates, lessons without content."
+    },
+    "syllabus": {
+      "name": "Syllabus",
+      "mission": "Compares the corpus with the official TACTIC syllabus and lists what is missing, domain by domain."
+    },
+    "performance": {
+      "name": "Performance",
+      "mission": "Finds the lessons and modules where learners drop out or fail most."
+    },
+    "user_model": {
+      "name": "Learner profiles",
+      "mission": "Describes three to five learner profiles, where they struggle and what they need next."
+    },
+    "recommendations": {
+      "name": "Recommendations",
+      "mission": "Turns profiles and syllabus coverage into a prioritised action plan for the week."
+    },
+    "create": {
+      "name": "Create",
+      "mission": "Suggests the next lessons to write and generates drafts (blocks and quiz) for empty lessons."
+    },
+    "news": {
+      "name": "News",
+      "mission": "Suggests topics from economic news and links them to corpus modules."
+    },
+    "mission": {
+      "name": "Missions",
+      "mission": "Suggests hands-on exercises and challenges matched to learners' actual level."
+    },
+    "marketing": {
+      "name": "Marketing",
+      "mission": "Compares acquisition channels and suggests where to spend the budget."
+    },
+    "notification": {
+      "name": "Notifications",
+      "mission": "Suggests when and how to reach learners, segment by segment."
+    },
+    "tact": {
+      "name": "TACT supervision",
+      "mission": "Reviews every report, spots contradictions and gives an opinion on what looks ready."
+    }
+  },
+  "status": {
+    "never": "Never run",
+    "fresh": "Up to date",
+    "outdated": "Needs a re-run",
+    "blocked": "Missing dependencies",
+    "running": "Running",
+    "failed": "Failed"
+  },
+  "card": {
+    "lastReport": "Last report {{when}}",
+    "noReport": "No report",
+    "uses": "Uses: {{list}}",
+    "open": "Open {{name}}",
+    "highlightUpstream": "Feeds the selected agent",
+    "highlightDownstream": "Uses the selected agent's reports"
+  },
+  "legend": {
+    "hint": "Hover or focus an agent to see its links:",
+    "upstream": "solid border, agents it depends on",
+    "downstream": "dotted border, agents that use its reports"
+  },
+  "detail": {
+    "statusTitle": "Status",
+    "run": "Run agent",
+    "rerun": "Run agent again",
+    "runSupervision": "Run supervision",
+    "running": "The agent is analysing the data…",
+    "runningHint": "This usually takes 20 to 60 seconds. You can close this panel.",
+    "blockedReason_one": "Run the {{list}} agent first: this agent needs its report.",
+    "blockedReason_other": "Run the {{list}} agents first: this agent needs their reports.",
+    "tactBlocked": "Run at least one other agent first: supervision reviews their reports.",
+    "newerDeps": "{{list}} has been run again since this agent's last report.",
+    "oldDeps": "Report older than {{days}} days for: {{list}}. Run them again for an up-to-date analysis.",
+    "selfOld": "The last report is more than {{days}} days old.",
+    "blindSpots": "Not run yet, reported as blind spots: {{list}}.",
+    "neverHint": "All the data it needs is there. Run the agent to get its first report.",
+    "freshHint": "The report reflects the latest versions of the agents it depends on.",
+    "dependencies": "Depends on",
+    "noDependencies": "No dependencies: this agent works directly on the data.",
+    "dependents": "Its reports feed:",
+    "never": "never run",
+    "lastReport": "Last report",
+    "lastReportOn": "Report of {{date}}",
+    "allReports": "See all its reports",
+    "emptyTitle": "No report yet",
+    "emptyBody": "The report will show here after the first run. It is also saved in the Reports tab.",
+    "errorTitle": "The agent could not finish",
+    "errorBody": "Try again in a moment. If it keeps failing, today's AI quota may be used up.",
+    "errorDetail": "Details: {{error}}",
+    "previousReport": "Last successful report",
+    "plan": "This agent writes a plan (text). It does not create, publish or send anything: the team puts it into practice.",
+    "planNews": "No news feed is connected: the agent reasons about recurring event types (rates, inflation, company results) and quotes no figures.",
+    "planNotification": "No notification is sent: sending will happen from the mobile app.",
+    "planMission": "No mission is created in the app: the plan describes what the Create agent can produce.",
+    "verdict": "Advisory only: supervision does not approve, block or publish anything. The team decides.",
+    "analyticsUnavailable": "Learning statistics are not available: the agent will be told and work without them.",
+    "demoData": "Part of the learning statistics is demo data.",
+    "dataSent": "Data sent",
+    "dataSentHint": "Aggregates computed on the whole corpus, not an extract of the first lessons.",
+    "inputs": {
+      "corpus": "Corpus totals by domain and level, and {{count}} representative lessons (those needing work first)",
+      "modules": "Figures per module: lessons, published, without content, without quiz",
+      "syllabus": "Official syllabus coverage by domain, and incomplete modules",
+      "performance": "Learning statistics: success, hardest lessons, time spent, retention",
+      "marketing": "Marketing figures: spend, conversions, acquisition cost",
+      "upstream": "Summary of upstream reports: at most three findings each, with their date"
+    },
+    "size": "Size: {{size}} of {{limit}} allowed",
+    "reduced": "Shortened to fit the limit: lists trimmed, no data cut off halfway.",
+    "showPayload": "Show the exact data sent"
+  },
+  "report": {
+    "findings": "Findings",
+    "lessons": "Lessons mentioned",
+    "empty": "This report has no findings.",
+    "lessonId": "ID {{id}}"
+  },
+  "run": {
+    "done": "{{name}} report saved",
+    "notSaved": "{{name}} report finished but not saved: it will be gone when the page reloads.",
+    "failed": "The {{name}} agent could not finish."
+  },
+  "create": {
+    "title": "Generate drafts",
+    "description": "Pick a module: the agent writes the blocks and quiz of every empty lesson. Everything is saved as a draft, to review before publishing.",
+    "domain": "Domain",
+    "allDomains": "All domains",
+    "module": "Module",
+    "chooseModule": "Choose a module",
+    "noModules": "No module in this domain.",
+    "emptyCount_zero": "No empty lesson in this module.",
+    "emptyCount_one": "1 empty lesson will be generated.",
+    "emptyCount_other": "{{count}} empty lessons will be generated.",
+    "generate_zero": "Generate drafts",
+    "generate_one": "Generate 1 draft",
+    "generate_other": "Generate {{count}} drafts",
+    "stop": "Stop",
+    "stopping": "Stopping…",
+    "progress": "Lesson {{done}} of {{total}}",
+    "current": "Working on: {{name}}",
+    "progressLabel": "Generation progress",
+    "skipHint": "A lesson someone edits during generation is left as it is.",
+    "summary": "{{ok}} of {{total}} draft(s) created.",
+    "summarySkipped": "{{count}} lesson(s) skipped because they were edited meanwhile.",
+    "summaryFailed": "{{count}} failed.",
+    "summaryStopped": "Generation stopped.",
+    "noneEmpty": "No empty lesson in this module."
+  },
+  "reports": {
+    "agent": "Agent",
+    "allAgents": "All agents",
+    "status": "Status",
+    "allStatuses": "All statuses",
+    "from": "From",
+    "to": "To",
+    "reset": "Clear filters",
+    "refresh": "Refresh",
+    "count_zero": "No reports",
+    "count_one": "1 report",
+    "count_other": "{{count}} reports",
+    "date": "Date",
+    "content": "Content",
+    "findings_zero": "No findings",
+    "findings_one": "1 finding",
+    "findings_other": "{{count}} findings",
+    "actions": "Actions for the report of {{date}}",
+    "read": "Read report",
+    "changeStatus": "Change status",
+    "delete": "Delete report",
+    "deleteTitle": "Delete this report?",
+    "deleteBody": "The {{name}} report of {{date}} will be permanently deleted. Agents that used it will use the previous report, if there is one.",
+    "deleted": "Report deleted",
+    "statusChanged": "Status updated: {{status}}",
+    "emptyTitle": "No reports saved",
+    "emptyBody": "Every agent run saves a report here.",
+    "goPipeline": "Go to the pipeline",
+    "noMatchTitle": "No report matches the filters",
+    "noMatchBody": "Change or clear the filters to see other reports.",
+    "errorTitle": "Could not load the reports",
+    "errorBody": "Check your connection and try again.",
+    "historyWarning": "The report history could not be loaded: the statuses shown may be incomplete.",
+    "localOnly": "Not saved",
+    "invalidRange": "The end date is before the start date."
+  },
+  "reportStatus": {
+    "new": "New",
+    "in_progress": "In progress",
+    "done": "Done",
+    "archived": "Archived"
+  },
+  "loadError": {
+    "title": "Could not load the corpus",
+    "body": "Agents need the corpus to work. Check your connection and try again."
+  },
+  "relative": {
+    "justNow": "just now"
+  }
+}

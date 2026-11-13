@@ -1,0 +1,97 @@
+{
+  "title": "Dashboard",
+  "description": "What needs your attention in the corpus, and learner activity.",
+  "newLesson": "Create a lesson",
+  "corpusError": "The corpus could not be loaded.",
+  "retry": "Retry",
+  "empty": {
+    "title": "The corpus is empty",
+    "body": "Create a first lesson or import an existing corpus to get started.",
+    "import": "Import a corpus"
+  },
+  "corpus": {
+    "title": "Corpus",
+    "details": "Detailed statistics",
+    "publishedOf_one": "of {{total}} lessons published.",
+    "publishedOf_other": "of {{total}} lessons published.",
+    "urgent_one": "{{n}} item to fix.",
+    "urgent_other": "{{n}} items to fix.",
+    "allGood": "Nothing urgent.",
+    "publishedPct": "{{pct}} published",
+    "drafts_one": "{{n}} draft",
+    "drafts_other": "{{n}} drafts"
+  },
+  "attention": {
+    "none": "All good: every lesson has content, a quiz, a module and a translation.",
+    "empty": {
+      "label_one": "{{count}} lesson with no content",
+      "label_other": "{{count}} lessons with no content",
+      "help": "No block written: the lesson is empty in the app."
+    },
+    "noquiz": {
+      "label_one": "{{count}} lesson with no quiz",
+      "label_other": "{{count}} lessons with no quiz",
+      "help": "No question to check what was understood."
+    },
+    "unassigned": {
+      "label_one": "{{count}} lesson with no module",
+      "label_other": "{{count}} lessons with no module",
+      "help": "Hidden from the learning path until it is assigned."
+    },
+    "untranslated": {
+      "label_one": "{{count}} lesson not translated to English",
+      "label_other": "{{count}} lessons not translated to English",
+      "help": "No block translated to English."
+    },
+    "drafts": {
+      "label_one": "{{count}} draft to review",
+      "label_other": "{{count}} drafts to review",
+      "help": "Not visible to learners yet."
+    },
+    "emptyModules": {
+      "label_one": "{{count}} empty module",
+      "label_other": "{{count}} empty modules",
+      "help": "Module created without any lesson."
+    }
+  },
+  "learners": {
+    "title": "Learners",
+    "details": "See details",
+    "missing": "Learner tracking is not enabled yet.",
+    "users": "Users",
+    "active": "Active",
+    "activeShare": "{{pct}} are on a streak",
+    "completions": "Lessons completed"
+  },
+  "charts": {
+    "domains": "Coverage by domain",
+    "domainsInfo": "Published lessons, drafts and still-empty lessons in each domain.",
+    "top": "Most completed lessons",
+    "topInfo": "The 6 lessons learners complete most often.",
+    "topEmpty": "No lesson completed yet.",
+    "completions": "Completions"
+  },
+  "reports": {
+    "title": "Latest agent reports",
+    "all": "All reports",
+    "emptyTitle": "No report yet",
+    "emptyBody": "Run an agent to get a corpus audit or ideas for new lessons.",
+    "run": "Run an agent",
+    "more_one": "(and {{count}} more finding)",
+    "more_other": "(and {{count}} more findings)",
+    "status": {
+      "new": "New",
+      "in_progress": "In progress",
+      "done": "Done",
+      "archived": "Archived"
+    }
+  },
+  "shortcuts": {
+    "title": "Shortcuts",
+    "drafts": { "label": "Review drafts", "help": "Lessons not published yet" },
+    "ideas": { "label": "Find lesson ideas", "help": "Suggestions from the syllabus" },
+    "agents": { "label": "Run an agent", "help": "Audit, gaps, performance" },
+    "import": { "label": "Import or export", "help": "Corpus, syllabus, app file" },
+    "quality": { "label": "Content quality", "help": "Readability, quizzes, translations" }
+  }
+}
