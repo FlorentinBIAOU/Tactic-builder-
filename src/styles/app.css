@@ -53,34 +53,6 @@
   color-scheme: light;
 }
 
-/*
- * Legacy variables used by the CSS modules of views not yet redesigned.
- * Mapped onto the new palette so old and new screens sit together.
- */
-:root,
-[data-theme] {
-  --bg: rgb(var(--c-background));
-  --bg1: rgb(var(--c-surface));
-  --bg2: rgb(var(--c-surface-2));
-  --bg3: rgb(var(--c-border));
-  --gold: rgb(var(--c-brand));
-  --gold2: rgb(var(--c-brand) / 0.12);
-  --gold3: rgb(var(--c-brand) / 0.25);
-  --green: rgb(var(--c-success));
-  --red: rgb(var(--c-danger));
-  --blue: rgb(var(--c-info));
-  --purple: rgb(var(--c-info));
-  --orange: rgb(var(--c-warning));
-  --txt: rgb(var(--c-foreground));
-  --muted: rgb(var(--c-muted));
-  --soft: rgb(var(--c-foreground) / 0.9);
-  --border: rgb(var(--c-border));
-  --border2: rgb(var(--c-input) / 0.6);
-  --font-title: 'Instrument Sans Variable', system-ui, sans-serif;
-  --font-body: 'Instrument Sans Variable', system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;

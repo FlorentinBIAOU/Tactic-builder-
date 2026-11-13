@@ -135,7 +135,7 @@ describe('marketingCorpusStats', () => {
     );
     expect(s.lessonCount).toBe(1);
     expect(s.trackCount).toBe(1);
-    expect(s.topTracks).toEqual([{ track: '💶 Budget', count: 1 }]);
+    expect(s.topTracks).toEqual([{ track: 'Budget', count: 1 }]);
     expect(s.levels).toEqual([{ level: 'Débutant', count: 1 }]);
   });
 });

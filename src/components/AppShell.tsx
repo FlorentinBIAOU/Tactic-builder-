@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { lazy, Suspense, useRef } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as D from '@radix-ui/react-dialog';
@@ -8,10 +8,13 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { SidebarNav, Wordmark } from '@/components/shell/Sidebar';
 import { Topbar } from '@/components/shell/Topbar';
 import { CommandPalette } from '@/components/shell/CommandPalette';
-import { AssistantPanel } from '@/components/shell/AssistantPanel';
 import { useShell } from '@/components/shell/store';
-import { LessonEditor } from '@/features/lessons/LessonEditor';
-import { PreviewSheet } from '@/features/lessons/PreviewSheet';
+import { useCorpus } from '@/store/corpus';
+
+// Heavy panels are loaded the first time they are opened.
+const LessonEditor = lazy(() => import('@/features/lessons/LessonEditor').then((m) => ({ default: m.LessonEditor })));
+const PreviewSheet = lazy(() => import('@/features/lessons/PreviewSheet').then((m) => ({ default: m.PreviewSheet })));
+const AssistantPanel = lazy(() => import('@/components/shell/AssistantPanel').then((m) => ({ default: m.AssistantPanel })));
 
 function PageSkeleton() {
   return (
@@ -27,7 +30,16 @@ function PageSkeleton() {
 export default function AppShell() {
   const { t } = useTranslation();
   const { pathname } = useLocation();
-  const { navOpen, setNavOpen } = useShell();
+  const { navOpen, setNavOpen, assistantOpen } = useShell();
+  const editorOpen = useCorpus((s) => s.editorOpen);
+  const previewOpen = useCorpus((s) => !!s.previewLesson);
+  const assistantUsed = useRef(false);
+  const editorUsed = useRef(false);
+  const previewUsed = useRef(false);
+  // Once mounted, keep panels mounted so closing animations and state work.
+  if (assistantOpen) assistantUsed.current = true;
+  if (editorOpen) editorUsed.current = true;
+  if (previewOpen) previewUsed.current = true;
 
   return (
     <TooltipProvider>
@@ -75,9 +87,11 @@ export default function AppShell() {
       </div>
 
       <CommandPalette />
-      <AssistantPanel />
-      <LessonEditor />
-      <PreviewSheet />
+      <Suspense fallback={null}>
+        {assistantUsed.current ? <AssistantPanel /> : null}
+        {editorUsed.current ? <LessonEditor /> : null}
+        {previewUsed.current ? <PreviewSheet /> : null}
+      </Suspense>
     </TooltipProvider>
   );
 }

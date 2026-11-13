@@ -7,16 +7,17 @@ import { ToastHost } from '@/components/Toast';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 // Each view is its own chunk, loaded on first visit.
-const AuthView = lazy(() => import('@/views/AuthView'));
+const AuthView = lazy(() => import('@/features/auth/AuthView'));
 const LessonsView = lazy(() => import('@/features/lessons/LessonsView'));
 const ImportExportView = lazy(() => import('@/features/import-export/ImportExportView'));
-const StatsView = lazy(() => import('@/views/StatsView'));
+const DashboardView = lazy(() => import('@/features/dashboard/DashboardView'));
+const StatsView = lazy(() => import('@/features/stats/StatsView'));
 const IdeasView = lazy(() => import('@/features/ideas/IdeasView'));
-const AgentsView = lazy(() => import('@/views/AgentsView'));
-const MarketingView = lazy(() => import('@/views/MarketingView'));
+const AgentsView = lazy(() => import('@/features/agents/AgentsPage'));
+const MarketingView = lazy(() => import('@/features/marketing/MarketingPage'));
 const StructureView = lazy(() => import('@/features/structure/StructureView'));
 const LibraryView = lazy(() => import('@/features/library/LibraryView'));
-const MembersView = lazy(() => import('@/views/MembersView'));
+const TeamView = lazy(() => import('@/features/team/TeamView'));
 
 export default function App() {
   const init = useAuth((s) => s.init);
@@ -43,9 +44,8 @@ export default function App() {
             </RequireAdmin>
           }
         >
-          <Route index element={<Navigate to="/lessons" replace />} />
-          {/* Dashboard page arrives in sprint 5; statistics until then. */}
-          <Route path="/dashboard" element={<StatsView />} />
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<DashboardView />} />
           <Route path="/lessons" element={<LessonsView />} />
           <Route path="/structure" element={<StructureView />} />
           <Route path="/library" element={<LibraryView />} />
@@ -54,7 +54,7 @@ export default function App() {
           <Route path="/agents" element={<AgentsView />} />
           <Route path="/stats" element={<StatsView />} />
           <Route path="/marketing" element={<MarketingView />} />
-          <Route path="/team" element={<MembersView />} />
+          <Route path="/team" element={<TeamView />} />
 
           {/* Old addresses still work. */}
           <Route path="/explore" element={<Navigate to="/lessons" replace />} />
