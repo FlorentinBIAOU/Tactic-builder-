@@ -83,7 +83,8 @@
     "error": "Something went wrong.",
     "pageError": "This page hit an error.",
     "pageErrorHelp": "Your data is safe. Try again, or reload the page if it keeps happening.",
-    "notFound": "Page not found"
+    "notFound": "Page not found",
+    "required": "required"
   },
   "status": {
     "draft": "Draft",

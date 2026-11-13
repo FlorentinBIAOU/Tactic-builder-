@@ -83,7 +83,8 @@
     "error": "Une erreur est survenue.",
     "pageError": "Cette page a rencontré une erreur.",
     "pageErrorHelp": "Vos données ne sont pas touchées. Réessayez, ou rechargez la page si le problème continue.",
-    "notFound": "Page introuvable"
+    "notFound": "Page introuvable",
+    "required": "obligatoire"
   },
   "status": {
     "draft": "Brouillon",

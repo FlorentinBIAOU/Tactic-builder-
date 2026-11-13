@@ -21,12 +21,13 @@ export function Topbar() {
   return (
     <header className="sticky top-0 z-topbar flex h-14 items-center gap-2 border-b border-border bg-background/90 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/75 lg:px-6">
       <IconButton className="lg:hidden" label={t('nav.openMenu')} icon={<MenuIcon />} onClick={() => setNavOpen(true)} />
-      <Wordmark className="lg:hidden" />
+      <Wordmark className="min-w-0 lg:hidden" />
 
       <button
         type="button"
         onClick={() => setCommandOpen(true)}
-        className="ml-auto flex h-9 w-full max-w-xs items-center gap-2 rounded border border-border bg-surface px-3 text-base text-muted transition-colors hover:border-input lg:ml-0 lg:max-w-sm"
+        aria-label={t('topbar.search')}
+        className="ml-auto flex h-9 shrink-0 items-center justify-center gap-2 rounded border border-border bg-surface px-2.5 text-base text-muted transition-colors hover:border-input sm:w-full sm:max-w-xs sm:justify-start sm:px-3 lg:ml-0 lg:max-w-sm"
       >
         <Search aria-hidden className="size-4" />
         <span className="hidden flex-1 truncate text-left sm:inline">{t('topbar.search')}</span>
@@ -36,7 +37,7 @@ export function Topbar() {
         </span>
       </button>
 
-      <div className="flex items-center gap-1 lg:ml-auto">
+      <div className="flex shrink-0 items-center gap-0.5 sm:gap-1 lg:ml-auto">
         <Button variant="ghost" size="sm" onClick={() => setAssistantOpen(true)} className="gap-2">
           <Bot aria-hidden />
           <span className="hidden md:inline">{t('topbar.assistant')}</span>
