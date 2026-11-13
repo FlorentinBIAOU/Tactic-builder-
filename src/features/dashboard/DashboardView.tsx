@@ -1,3 +1,4 @@
+import { isAgentId } from '@/lib/agents';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -322,7 +323,7 @@ const STATUS_TONE: Record<AgentReportStatus, 'info' | 'warning' | 'success' | 'n
 };
 
 /** Agent labels are stored as « 1 · Corpus »: keep the name only. */
-const agentName = (label: string) => label.replace(/^\s*\d+\s*[·.-]\s*/, '');
+const stripNumber = (label: string) => label.replace(/^\s*\d+\s*[·.-]\s*/, '');
 
 function RecentReports() {
   const { t } = useTranslation('dashboard');
@@ -381,7 +382,7 @@ function RecentReports() {
             return (
               <li key={r.id} className="flex flex-col gap-1 py-3 first:pt-0 last:pb-0">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <span className="font-medium">{agentName(r.agentLabel)}</span>
+                  <span className="font-medium">{isAgentId(r.agentId) ? t(`agents:agent.${r.agentId}.name`) : stripNumber(r.agentLabel)}</span>
                   <Badge tone={STATUS_TONE[r.status]}>{t(`reports.status.${r.status}`)}</Badge>
                   <span className="ml-auto text-sm text-muted">{fmtDate(r.createdAt)}</span>
                 </div>

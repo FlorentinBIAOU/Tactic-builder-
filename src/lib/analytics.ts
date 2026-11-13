@@ -1,3 +1,4 @@
+import { hasContent as ruleHasContent, hasQuiz as ruleHasQuiz } from './lessonRules';
 /**
  * Pure analytics functions that compute corpus-health and
  * content-quality numbers from the in-memory corpus state.
@@ -20,15 +21,14 @@ export function isTranslated(l: Lesson, lang: 'en' | 'es'): boolean {
   return !!l.translations?.[lang]?.blocks?.some((b) => !!b?.text?.trim());
 }
 
+/** Same rules as the lesson list filters (lessonRules), so counts match the links. */
 export function hasContent(l: Lesson): boolean {
-  return l.blocks.length > 0;
+  return ruleHasContent(l);
 }
 
-/** No quiz, or the first quiz has no question / no option text. */
+/** No quiz with a question. */
 export function isQuizEmpty(l: Lesson): boolean {
-  if (l.quizzes.length === 0) return true;
-  const q = l.quizzes[0];
-  return !q.q?.trim() || q.opts.every((o) => !o?.trim());
+  return !ruleHasQuiz(l);
 }
 
 // ─── Corpus health ─────────────────────────────────────────────────────────
