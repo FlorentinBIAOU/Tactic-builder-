@@ -1,31 +1,73 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Eye, EyeOff, Languages } from 'lucide-react';
 import { supabase, takeInitialAuthHash } from '@/lib/supabase';
 import { useAuth } from '@/store/auth';
-import styles from './AuthView.module.css';
+import { LANGUAGES } from '@/i18n';
+import { Button, IconButton } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Field } from '@/components/ui/field';
+import { Notice } from '@/components/ui/feedback';
+import { Menu, MenuContent, MenuItem, MenuTrigger } from '@/components/ui/menu';
+import { cn } from '@/lib/utils';
 
 type Mode = 'login' | 'forgot' | 'reset';
-type Alert = { msg: string; type: 'error' | 'success' } | null;
+type Alert = { msg: string; tone: 'danger' | 'info' } | null;
 
-function pwStrength(v: string): { pct: number; color: string } {
-  let score = 0;
-  if (v.length >= 8) score++;
-  if (/[A-Z]/.test(v)) score++;
-  if (/[0-9]/.test(v)) score++;
-  if (/[^A-Za-z0-9]/.test(v)) score++;
-  const pct = [0, 25, 50, 75, 100][score];
-  const color =
-    score <= 1 ? 'var(--red)' : score === 2 ? 'var(--gold)' : score === 3 ? 'var(--blue)' : 'var(--green)';
-  return { pct, color };
+function strengthOf(v: string): 0 | 1 | 2 | 3 | 4 {
+  let s = 0;
+  if (v.length >= 8) s++;
+  if (/[A-Z]/.test(v)) s++;
+  if (/[0-9]/.test(v)) s++;
+  if (/[^A-Za-z0-9]/.test(v)) s++;
+  return s as 0 | 1 | 2 | 3 | 4;
+}
+
+/** Decorative candlestick chart drawn for the brand panel. */
+function Candles() {
+  // Open/close/high/low on a 0–100 scale, a rising trend with pullbacks.
+  const data = [
+    [62, 55, 66, 52], [55, 58, 61, 51], [58, 50, 60, 47], [50, 54, 57, 46], [54, 47, 56, 44],
+    [47, 52, 55, 45], [52, 44, 53, 40], [44, 46, 49, 40], [46, 38, 47, 35], [38, 41, 44, 34],
+    [41, 33, 42, 30], [33, 36, 39, 29], [36, 28, 37, 25], [28, 30, 33, 24], [30, 22, 31, 19],
+    [22, 25, 28, 18], [25, 17, 26, 14], [17, 19, 22, 13], [19, 12, 20, 9],
+  ];
+  const w = 22;
+  const lo = 5;
+  const hi = 70;
+  const y = (v: number) => ((v - lo) / (hi - lo)) * 160 + 10; // map to a 180-high box
+  return (
+    <svg viewBox={`0 0 ${data.length * w + 8} 180`} className="h-auto w-full" aria-hidden>
+      {data.map(([o, c, h, l], i) => {
+        const x = 4 + i * w + w / 2;
+        const up = c < o; // lower value = higher on screen
+        return (
+          <g key={i} opacity={0.3 + (i / data.length) * 0.7}>
+            <line x1={x} x2={x} y1={y(l)} y2={y(h)} stroke="rgb(var(--c-brand))" strokeWidth={1.5} />
+            <rect
+              x={x - 6}
+              y={y(Math.min(o, c))}
+              width={12}
+              height={Math.max(3, y(Math.max(o, c)) - y(Math.min(o, c)))}
+              rx={2}
+              fill={up ? 'rgb(var(--c-brand))' : 'rgb(var(--c-surface))'}
+              stroke="rgb(var(--c-brand))"
+              strokeWidth={1.5}
+            />
+          </g>
+        );
+      })}
+    </svg>
+  );
 }
 
 /**
- * Admin login. No public registration — admin accounts are provisioned by
- * an existing administrator (Supabase dashboard + role grant). Supports the
- * forgot-password request and the reset-password completion flow (when the
- * user arrives from a recovery email).
+ * Sign-in, forgotten password, and set-password (from a recovery or invite
+ * link). No public sign-up: accounts are invited by an administrator.
  */
 export default function AuthView() {
+  const { t, i18n } = useTranslation('auth');
   const navigate = useNavigate();
   const { signIn, resetPassword, updatePassword } = useAuth();
 
@@ -33,20 +75,16 @@ export default function AuthView() {
   const [invited, setInvited] = useState(false);
   const [alert, setAlert] = useState<Alert>(null);
   const [busy, setBusy] = useState(false);
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
-
   const [newPw, setNewPw] = useState('');
-  const [newPwConfirm, setNewPwConfirm] = useState('');
+  const [newPw2, setNewPw2] = useState('');
 
-  const strength = useMemo(() => pwStrength(newPw), [newPw]);
-  const pwMismatch = newPwConfirm.length > 0 && newPwConfirm !== newPw;
+  const strength = useMemo(() => strengthOf(newPw), [newPw]);
+  const mismatch = newPw2.length > 0 && newPw2 !== newPw;
 
-  // Show the set-password form only when the page was opened from a
-  // recovery or invite email link (token in the URL hash). A plain
-  // `?reset=1` on an open session is not enough.
+  // The set-password form opens only from a recovery or invite email link.
   useEffect(() => {
     const hash = takeInitialAuthHash();
     if (hash.includes('type=recovery')) setMode('reset');
@@ -54,240 +92,214 @@ export default function AuthView() {
       setInvited(true);
       setMode('reset');
     }
-
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') setMode('reset');
     });
     return () => data.subscription.unsubscribe();
   }, []);
 
-  const onLogin = async (e: React.FormEvent) => {
+  const switchMode = (m: Mode) => {
+    setAlert(null);
+    setMode(m);
+  };
+
+  const onLogin = async (e: FormEvent) => {
     e.preventDefault();
     setAlert(null);
-    if (!email || !password) {
-      setAlert({ msg: 'Please fill in all fields.', type: 'error' });
-      return;
-    }
+    if (!email || !password) return setAlert({ msg: t('errors.required'), tone: 'danger' });
     setBusy(true);
     const res = await signIn(email, password);
     setBusy(false);
-    if (!res.ok) {
-      setAlert({ msg: res.error, type: 'error' });
-      return;
-    }
-    navigate('/explore', { replace: true });
+    if (!res.ok) return setAlert({ msg: res.error, tone: 'danger' });
+    navigate('/', { replace: true });
   };
 
-  const onForgot = async (e: React.FormEvent) => {
+  const onForgot = async (e: FormEvent) => {
     e.preventDefault();
     setAlert(null);
-    if (!email) {
-      setAlert({ msg: 'Enter your email to receive a reset link.', type: 'error' });
-      return;
-    }
+    if (!email) return setAlert({ msg: t('errors.emailRequired'), tone: 'danger' });
     setBusy(true);
-    const redirectTo = `${window.location.origin}/auth?reset=1`;
-    const res = await resetPassword(email, redirectTo);
+    const res = await resetPassword(email, `${window.location.origin}/auth`);
     setBusy(false);
-    setAlert(
-      res.ok
-        ? { msg: `If an account exists for ${email}, a reset link is on its way.`, type: 'success' }
-        : { msg: res.error, type: 'error' }
-    );
+    setAlert(res.ok ? { msg: t('forgot.sent', { email }), tone: 'info' } : { msg: res.error, tone: 'danger' });
   };
 
-  const onReset = async (e: React.FormEvent) => {
+  const onReset = async (e: FormEvent) => {
     e.preventDefault();
     setAlert(null);
-    if (newPw.length < 8) {
-      setAlert({ msg: 'Password must be at least 8 characters.', type: 'error' });
-      return;
-    }
-    if (newPw !== newPwConfirm) {
-      setAlert({ msg: 'Passwords do not match.', type: 'error' });
-      return;
-    }
+    if (newPw.length < 8) return setAlert({ msg: t('errors.tooShort'), tone: 'danger' });
+    if (newPw !== newPw2) return setAlert({ msg: t('errors.mismatch'), tone: 'danger' });
     setBusy(true);
     const res = await updatePassword(newPw);
     setBusy(false);
-    if (!res.ok) {
-      setAlert({ msg: res.error, type: 'error' });
-      return;
-    }
-    setAlert({ msg: 'Password updated. Redirecting…', type: 'success' });
-    setTimeout(() => navigate('/explore', { replace: true }), 1200);
+    if (!res.ok) return setAlert({ msg: res.error, tone: 'danger' });
+    setAlert({ msg: t('reset.done'), tone: 'info' });
+    setTimeout(() => navigate('/', { replace: true }), 1200);
   };
 
+  const head =
+    mode === 'login'
+      ? { title: t('login.title'), sub: t('login.subtitle') }
+      : mode === 'forgot'
+        ? { title: t('forgot.title'), sub: t('forgot.subtitle') }
+        : invited
+          ? { title: t('invite.title'), sub: t('invite.subtitle') }
+          : { title: t('reset.title'), sub: t('reset.subtitle') };
+
+  const strengthLabel = [t('strength.weak'), t('strength.weak'), t('strength.fair'), t('strength.good'), t('strength.strong')][strength];
+
+  const pwToggle = (
+    <IconButton
+      size="icon-sm"
+      className="absolute right-1 top-1/2 -translate-y-1/2"
+      label={showPw ? t('fields.hide') : t('fields.show')}
+      icon={showPw ? <EyeOff /> : <Eye />}
+      onClick={() => setShowPw((v) => !v)}
+    />
+  );
+
   return (
-    <div className={styles.wrap}>
-      <div className={styles.logo}>
-        <div className={styles.logoTitle}>TACTIC</div>
-        <div className={styles.logoSub}>Corpus Builder</div>
-      </div>
-
-      <div className={styles.card}>
-        <div className={styles.badge}>
-          <span className={styles.badgeDot} />
-          Admin Dashboard
-        </div>
-        <div className={styles.cardHead}>
-          <div className={styles.cardTitle}>
-            {mode === 'login'
-              ? 'Welcome back'
-              : mode === 'forgot'
-              ? 'Reset password'
-              : invited
-              ? 'Set your password'
-              : 'Set a new password'}
-          </div>
-          <div className={styles.cardSub}>
-            {mode === 'login'
-              ? 'Sign in to manage lessons, content and users.'
-              : mode === 'forgot'
-              ? "We'll email you a secure reset link."
-              : invited
-              ? 'Welcome to the team. Choose a password to finish setting up your account.'
-              : 'Choose a new password for your account.'}
-          </div>
+    <div className="grid min-h-screen lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+      <div className="flex flex-col px-6 py-6 sm:px-12">
+        <div className="flex items-center justify-between">
+          <span className="font-brand text-xl text-brand">TACTIC</span>
+          <Menu>
+            <MenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <Languages aria-hidden />
+                {i18n.language?.startsWith('en') ? 'English' : 'Français'}
+              </Button>
+            </MenuTrigger>
+            <MenuContent>
+              {LANGUAGES.map((l) => (
+                <MenuItem key={l.code} onSelect={() => void i18n.changeLanguage(l.code)}>
+                  {l.label}
+                </MenuItem>
+              ))}
+            </MenuContent>
+          </Menu>
         </div>
 
-        {alert ? (
-          <div className={`${styles.alert} ${styles[alert.type]}`}>{alert.msg}</div>
-        ) : null}
+        <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-12">
+          <h1 className="text-2xl font-semibold tracking-tight">{head.title}</h1>
+          <p className="mt-1.5 text-base text-muted">{head.sub}</p>
 
-        {mode === 'login' ? (
-          <form className={styles.form} onSubmit={onLogin}>
-            <div className={styles.fieldGroup}>
-              <label className={styles.label}>Email address</label>
-              <input
-                className={styles.input}
-                type="email"
-                placeholder="you@example.com"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className={styles.fieldGroup}>
-              <label className={styles.label}>
-                Password
-                <button
-                  type="button"
-                  className={styles.forgot}
-                  onClick={() => {
-                    setAlert(null);
-                    setMode('forgot');
-                  }}
-                >
-                  Forgot password?
-                </button>
-              </label>
-              <div className={styles.pwWrap}>
-                <input
-                  className={styles.input}
-                  type={showPw ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  className={styles.pwToggle}
-                  onClick={() => setShowPw((v) => !v)}
-                >
-                  {showPw ? '🙈' : '👁'}
+          {alert ? (
+            <Notice tone={alert.tone} className="mt-6">
+              {alert.msg}
+            </Notice>
+          ) : null}
+
+          {mode === 'login' ? (
+            <form onSubmit={onLogin} className="mt-6 flex flex-col gap-4" noValidate>
+              <Field label={t('fields.email')}>
+                <Input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              </Field>
+              <div className="flex flex-col gap-1.5">
+                <Field label={t('fields.password')}>
+                  <div className="relative">
+                    <Input
+                      type={showPw ? 'text' : 'password'}
+                      autoComplete="current-password"
+                      className="pr-10"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    {pwToggle}
+                  </div>
+                </Field>
+                <button type="button" className="self-end text-sm text-brand hover:underline" onClick={() => switchMode('forgot')}>
+                  {t('login.forgot')}
                 </button>
               </div>
-            </div>
-            <button type="submit" className={styles.submit} disabled={busy}>
-              {busy ? 'Signing in…' : 'Sign in'}
-            </button>
-          </form>
-        ) : mode === 'forgot' ? (
-          <form className={styles.form} onSubmit={onForgot}>
-            <div className={styles.fieldGroup}>
-              <label className={styles.label}>Email address</label>
-              <input
-                className={styles.input}
-                type="email"
-                placeholder="you@example.com"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit" className={styles.submit} disabled={busy}>
-              {busy ? 'Sending…' : 'Send reset link'}
-            </button>
-            <button
-              type="button"
-              className={styles.linkBtn}
-              onClick={() => {
-                setAlert(null);
-                setMode('login');
-              }}
-            >
-              ← Back to sign in
-            </button>
-          </form>
-        ) : (
-          <form className={styles.form} onSubmit={onReset}>
-            <div className={styles.fieldGroup}>
-              <label className={styles.label}>New password</label>
-              <div className={styles.pwWrap}>
-                <input
-                  className={styles.input}
-                  type={showPw ? 'text' : 'password'}
-                  placeholder="Min. 8 characters"
-                  autoComplete="new-password"
-                  value={newPw}
-                  onChange={(e) => setNewPw(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  className={styles.pwToggle}
-                  onClick={() => setShowPw((v) => !v)}
-                >
-                  {showPw ? '🙈' : '👁'}
-                </button>
-              </div>
-              <div className={styles.strength}>
-                <div
-                  className={styles.strengthBar}
-                  style={{ width: `${strength.pct}%`, background: strength.color }}
-                />
-              </div>
-            </div>
-            <div className={styles.fieldGroup}>
-              <label className={styles.label}>Confirm new password</label>
-              <input
-                className={`${styles.input} ${pwMismatch ? styles.inputError : ''}`}
-                type={showPw ? 'text' : 'password'}
-                placeholder="••••••••"
-                autoComplete="new-password"
-                value={newPwConfirm}
-                onChange={(e) => setNewPwConfirm(e.target.value)}
-                required
-              />
-              {pwMismatch ? (
-                <div className={styles.fieldError}>Passwords do not match.</div>
+              <Button type="submit" variant="primary" size="lg" loading={busy} className="mt-2">
+                {t('login.submit')}
+              </Button>
+              <p className="text-sm text-muted">{t('noSignup')}</p>
+            </form>
+          ) : null}
+
+          {mode === 'forgot' ? (
+            <form onSubmit={onForgot} className="mt-6 flex flex-col gap-4" noValidate>
+              <Field label={t('fields.email')}>
+                <Input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              </Field>
+              <Button type="submit" variant="primary" size="lg" loading={busy}>
+                {t('forgot.submit')}
+              </Button>
+              <Button variant="ghost" onClick={() => switchMode('login')}>
+                {t('forgot.back')}
+              </Button>
+            </form>
+          ) : null}
+
+          {mode === 'reset' ? (
+            <form onSubmit={onReset} className="mt-6 flex flex-col gap-4" noValidate>
+              <Field label={t('fields.newPassword')} hint={t('strength.hint')}>
+                <div className="relative">
+                  <Input
+                    type={showPw ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    className="pr-10"
+                    value={newPw}
+                    onChange={(e) => setNewPw(e.target.value)}
+                  />
+                  {pwToggle}
+                </div>
+              </Field>
+              {newPw ? (
+                <div className="flex items-center gap-3" aria-live="polite">
+                  <div className="flex flex-1 gap-1" aria-hidden>
+                    {[1, 2, 3, 4].map((i) => (
+                      <span
+                        key={i}
+                        className={cn(
+                          'h-1 flex-1 rounded-full bg-surface-2',
+                          i <= strength && (strength <= 1 ? 'bg-danger' : strength === 2 ? 'bg-warning' : 'bg-success')
+                        )}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm text-muted">
+                    {t('strength.label')} : {strengthLabel}
+                  </span>
+                </div>
               ) : null}
-            </div>
-            <button type="submit" className={styles.submit} disabled={busy}>
-              {busy ? 'Updating…' : 'Update password'}
-            </button>
-          </form>
-        )}
+              <Field label={t('fields.confirm')} error={mismatch ? t('errors.mismatch') : undefined}>
+                <Input
+                  type={showPw ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  value={newPw2}
+                  onChange={(e) => setNewPw2(e.target.value)}
+                />
+              </Field>
+              <Button type="submit" variant="primary" size="lg" loading={busy}>
+                {t('reset.submit')}
+              </Button>
+            </form>
+          ) : null}
+        </div>
       </div>
 
-      <div className={styles.note}>
-        Need access? Ask an existing administrator to create your account.
-      </div>
+      {/* Brand panel */}
+      <aside className="relative hidden overflow-hidden border-l border-border bg-surface lg:flex lg:flex-col lg:justify-between lg:p-12">
+        <div className="max-w-md">
+          <p className="font-brand text-3xl leading-tight text-foreground">
+            {t('aside.title')}
+          </p>
+          <ul className="mt-6 flex flex-col gap-3 text-md text-muted">
+            {(t('aside.points', { returnObjects: true }) as string[]).map((p) => (
+              <li key={p} className="flex gap-3">
+                <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-brand" />
+                {p}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="-mx-4 mt-12">
+          <Candles />
+        </div>
+      </aside>
     </div>
   );
 }

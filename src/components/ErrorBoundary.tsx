@@ -1,4 +1,26 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { AlertTriangle } from 'lucide-react';
+import { EmptyState } from '@/components/ui/feedback';
+import { Button } from '@/components/ui/button';
+
+function ErrorFallback({ onRetry }: { onRetry: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <div role="alert">
+      <EmptyState
+        icon={<AlertTriangle />}
+        title={t('states.pageError')}
+        description={t('states.pageErrorHelp')}
+        action={
+          <Button variant="primary" onClick={onRetry}>
+            {t('actions.retry')}
+          </Button>
+        }
+      />
+    </div>
+  );
+}
 
 type Props = { children: ReactNode; fallback?: (reset: () => void) => ReactNode };
 type State = { error: Error | null };
@@ -23,16 +45,6 @@ export default class ErrorBoundary extends Component<Props, State> {
   render() {
     if (!this.state.error) return this.props.children;
     if (this.props.fallback) return this.props.fallback(this.reset);
-    return (
-      <div role="alert" style={{ padding: 32, maxWidth: 560 }}>
-        <h2 style={{ margin: '0 0 8px' }}>This page hit an error.</h2>
-        <p style={{ margin: '0 0 16px', opacity: 0.8 }}>
-          Your data is safe. Try again, or reload the page if it keeps happening.
-        </p>
-        <button type="button" className="btn primary" onClick={this.reset}>
-          Try again
-        </button>
-      </div>
-    );
+    return <ErrorFallback onRetry={this.reset} />;
   }
 }
