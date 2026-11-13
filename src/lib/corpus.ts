@@ -4,6 +4,7 @@
  * never import `supabase` directly.
  */
 
+import i18n from '@/i18n';
 import { supabase } from './supabase';
 import {
   domainToRow,
@@ -292,23 +293,26 @@ export async function deleteResource(id: string): Promise<void> {
 /** Turn a Supabase error into a user-facing message (RLS denials etc.). */
 export function corpusErrorMessage(err: unknown): string {
   const e = err as { message?: string; code?: string } | null;
-  if (!e) return 'Unknown error';
+  if (!e) return i18n.t('messages.errUnknown');
   // Corpus tables not created yet → point the admin at the migration.
   if (
     e.code === 'PGRST205' ||
     e.code === '42P01' ||
     /could not find the table|relation .* does not exist/i.test(e.message ?? '')
   ) {
-    return 'Corpus tables not found — run the 0002_corpus_admin.sql migration first.';
+    return i18n.t('messages.errNotInstalled');
   }
   if (e.code === '42501' || /row-level security/i.test(e.message ?? '')) {
-    return 'Permission denied — admin role required.';
+    return i18n.t('messages.errPermission');
   }
   if (err instanceof LessonConflictError) {
-    return 'This lesson was changed by someone else since you opened it. Reload the page to get the latest version, then redo your changes.';
+    return i18n.t('messages.errConflict');
   }
   if (e.code === '23514') {
-    return 'This value is not allowed (check links and numbers).';
+    return i18n.t('messages.errInvalid');
   }
-  return e.message ?? 'Request failed';
+  if (/failed to fetch|networkerror|load failed/i.test(e.message ?? '')) {
+    return i18n.t('messages.errNetwork');
+  }
+  return i18n.t('messages.errGeneric', { detail: e.message ?? '' });
 }

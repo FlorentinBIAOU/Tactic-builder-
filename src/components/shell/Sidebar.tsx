@@ -51,7 +51,7 @@ export function Wordmark({ className }: { className?: string }) {
   return (
     <span className={cn('flex items-baseline gap-2', className)}>
       <span className="font-brand text-xl leading-none text-brand">TACTIC</span>
-      <span className="text-sm font-medium text-muted">Admin</span>
+      <span className="hidden text-sm font-medium text-muted min-[400px]:inline lg:inline">Admin</span>
     </span>
   );
 }

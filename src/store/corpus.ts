@@ -203,7 +203,7 @@ export const useCorpus = create<CorpusState>((set, get) => ({
         lessons: s.lessons.map((l) => (l.trackId === id ? { ...l, trackId: null } : l)),
         trackFilter: s.trackFilter === id ? null : s.trackFilter,
       }));
-      toast('Module deleted', 'info');
+      toast(i18n.t('messages.moduleDeleted'), 'info');
     } catch (err) {
       toast(corpusErrorMessage(err), 'error');
     }
@@ -217,7 +217,7 @@ export const useCorpus = create<CorpusState>((set, get) => ({
       set((s) => ({
         lessons: s.lessons.map((l) => (l.tag === oldTag ? { ...l, tag: next } : l)),
       }));
-      toast(`Domain "${oldTag}" → "${next}"`, 'success');
+      toast(i18n.t('messages.domainRenamed', { from: oldTag, to: next }), 'success');
     } catch (err) {
       toast(corpusErrorMessage(err), 'error');
     }
@@ -249,7 +249,7 @@ export const useCorpus = create<CorpusState>((set, get) => ({
         domains: s.domains.filter((d) => d.id !== id),
         tracks: s.tracks.map((t) => (t.domainId === id ? { ...t, domainId: null } : t)),
       }));
-      toast('Domain deleted', 'info');
+      toast(i18n.t('messages.domainDeleted'), 'info');
     } catch (err) {
       toast(corpusErrorMessage(err), 'error');
     }
@@ -261,7 +261,7 @@ export const useCorpus = create<CorpusState>((set, get) => ({
       const n = await api.insertLessons(lessons);
       await get().load();
       toast(
-        `Added ${n} lessons and ${t} modules. ${lessons.length - n} lessons already existed and were left unchanged.`,
+        i18n.t('messages.seedImported', { lessons: n, modules: t, skipped: lessons.length - n }),
         'success'
       );
       return true;
@@ -321,7 +321,7 @@ export const useCorpus = create<CorpusState>((set, get) => ({
       const n = await api.insertLessons(lessons);
       await get().load();
       toast(
-        `Added ${d} domains, ${t} modules, ${n} lessons. Existing items were left unchanged.`,
+        i18n.t('messages.syllabusImported', { domains: d, modules: t, lessons: n }),
         'success'
       );
       return true;
