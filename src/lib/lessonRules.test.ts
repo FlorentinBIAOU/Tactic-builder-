@@ -1,5 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { cleanQuizzes, publishBlocker, removeQuizOption } from './lessonRules';
+import {
+  cleanQuizzes,
+  durationMinutes,
+  hasContent,
+  hasQuiz,
+  isFullyTranslated,
+  isTranslated,
+  moveItem,
+  publishBlocker,
+  publishBlockers,
+  publishChecks,
+  removeQuizOption,
+} from './lessonRules';
 import type { Lesson, Quiz } from './types';
 
 const quiz = (over: Partial<Quiz> = {}): Quiz => ({
@@ -65,5 +77,50 @@ describe('publishBlocker', () => {
   });
   it('accepts a lesson without quiz', () => {
     expect(publishBlocker(lesson({ quizzes: [] }))).toBeNull();
+  });
+});
+
+describe('publishBlockers', () => {
+  it('is empty for a complete lesson', () => {
+    expect(publishBlockers(lesson())).toEqual([]);
+  });
+  it('lists every failing required rule', () => {
+    const l = lesson({ name: ' ', blocks: [], quizzes: [quiz({ q: '', opts: ['a', ''], correct: 1 })] });
+    expect(publishBlockers(l)).toEqual(['title', 'content', 'quizQuestion', 'quizCorrect']);
+  });
+  it('ignores quizzes left completely empty', () => {
+    expect(publishBlockers(lesson({ quizzes: [quiz({ q: '', opts: ['', ''] })] }))).toEqual([]);
+  });
+  it('keeps recommendations out of the blockers', () => {
+    const checks = publishChecks(lesson({ quizzes: [], summary: '' }));
+    expect(checks.find((c) => c.id === 'quiz')).toMatchObject({ ok: false, required: false });
+    expect(publishBlockers(lesson({ quizzes: [] }))).toEqual([]);
+  });
+});
+
+describe('content flags', () => {
+  it('detects content, quiz and translations', () => {
+    expect(hasContent(lesson({ blocks: [{ type: 'tip', text: ' ' }] }))).toBe(false);
+    expect(hasQuiz(lesson({ quizzes: [] }))).toBe(false);
+    const l = lesson({ translations: { en: { blocks: [{ type: 'content', text: 'Hi' }] }, es: { title: 'Hola', blocks: [] } } });
+    expect(isTranslated(l, 'en')).toBe(true);
+    // A title alone does not make a translation.
+    expect(isTranslated(l, 'es')).toBe(false);
+    expect(isFullyTranslated(l)).toBe(false);
+  });
+});
+
+describe('moveItem', () => {
+  it('swaps neighbours and ignores moves out of range', () => {
+    expect(moveItem(['a', 'b', 'c'], 0, 1)).toEqual(['b', 'a', 'c']);
+    const list = ['a', 'b'];
+    expect(moveItem(list, 0, -1)).toBe(list);
+  });
+});
+
+describe('durationMinutes', () => {
+  it('reads the number of minutes', () => {
+    expect(durationMinutes('3 min')).toBe(3);
+    expect(durationMinutes('')).toBe(0);
   });
 });
