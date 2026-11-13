@@ -34,11 +34,19 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild, loading, disabled, children, type, ...props }, ref) => {
-    const Comp = asChild ? Slot : 'button';
+    if (asChild) {
+      // Slot needs exactly one child: no spinner in this mode.
+      return (
+        <Slot ref={ref} className={cn(buttonVariants({ variant, size }), className)} {...props}>
+          {children}
+        </Slot>
+      );
+    }
+    const Comp = 'button';
     return (
       <Comp
         ref={ref}
-        type={asChild ? undefined : (type ?? 'button')}
+        type={type ?? 'button'}
         className={cn(buttonVariants({ variant, size }), className)}
         disabled={disabled || loading}
         aria-busy={loading || undefined}
