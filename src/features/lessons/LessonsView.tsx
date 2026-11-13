@@ -150,9 +150,10 @@ export default function LessonsView() {
   const moduleOptions = useMemo(
     () =>
       [...tracks]
-        .filter((tr) => !filters.domain || tr.domainId === filters.domain)
+        // Keep the active module listed even if it belongs to another domain.
+        .filter((tr) => !filters.domain || tr.domainId === filters.domain || tr.id === filters.module)
         .sort((a, b) => a.sortOrder - b.sortOrder),
-    [tracks, filters.domain]
+    [tracks, filters.domain, filters.module]
   );
 
   const filtered = filters.q || filters.domain || filters.module || filters.status !== 'all';

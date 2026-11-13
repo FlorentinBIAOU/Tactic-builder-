@@ -232,7 +232,7 @@ export async function fetchLessonBlocks(id: string): Promise<unknown[]> {
 /** Upload a file to the public `resources` bucket; returns its public URL. */
 export async function uploadResourceFile(file: File): Promise<string> {
   if (file.size > RESOURCE_FILE_MAX_BYTES) {
-    throw new Error('File is larger than 25 MB.');
+    throw new Error(i18n.t('messages.fileTooLarge'));
   }
   const safe = file.name.replace(/[^a-zA-Z0-9.\-_]+/g, '-');
   const path = `${Date.now()}-${safe}`;
@@ -264,7 +264,7 @@ export async function upsertResource(
   r: Omit<Resource, 'id' | 'createdAt'> & { id?: string }
 ): Promise<Resource> {
   if (!isSafeUrl(r.url)) {
-    throw new Error('Links must start with http:// or https://');
+    throw new Error(i18n.t('messages.unsafeLink'));
   }
   const row: Partial<ResourceRow> = {
     ...(r.id ? { id: r.id } : {}),
@@ -310,6 +310,9 @@ export function corpusErrorMessage(err: unknown): string {
   }
   if (e.code === '23514') {
     return i18n.t('messages.errInvalid');
+  }
+  if (err instanceof Error && !('code' in err) && [i18n.t('messages.fileTooLarge'), i18n.t('messages.unsafeLink')].includes(err.message)) {
+    return err.message;
   }
   if (/failed to fetch|networkerror|load failed/i.test(e.message ?? '')) {
     return i18n.t('messages.errNetwork');

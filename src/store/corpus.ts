@@ -199,10 +199,11 @@ export const useCorpus = create<CorpusState>((set, get) => ({
       await api.deleteTrack(id);
       set((s) => ({
         tracks: s.tracks.filter((t) => t.id !== id),
-        // Detach lessons that pointed at the removed track.
-        lessons: s.lessons.map((l) => (l.trackId === id ? { ...l, trackId: null } : l)),
         trackFilter: s.trackFilter === id ? null : s.trackFilter,
       }));
+      // The database detached the module's lessons (and bumped their
+      // updated_at): reload them so the next edit is not seen as a conflict.
+      await get().load();
       toast(i18n.t('messages.moduleDeleted'), 'info');
     } catch (err) {
       toast(corpusErrorMessage(err), 'error');

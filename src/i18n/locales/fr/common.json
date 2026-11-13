@@ -107,6 +107,12 @@
     "errConflict": "Cette leçon a été modifiée par quelqu'un d'autre depuis que vous l'avez ouverte. Rechargez la page pour récupérer la dernière version, puis refaites vos changements.",
     "errInvalid": "Valeur refusée : vérifiez les liens et les nombres.",
     "errNetwork": "Le serveur ne répond pas. Vérifiez votre connexion et réessayez.",
-    "errGeneric": "L'opération a échoué : {{detail}}"
+    "errGeneric": "L'opération a échoué : {{detail}}",
+    "aiQuota": "Limite quotidienne d'utilisation de l'IA atteinte. Réessayez demain.",
+    "aiTooLarge": "La demande envoyée à l'IA est trop longue. Réduisez le contenu et réessayez.",
+    "aiFailed": "Le service d'IA n'a pas pu répondre. Réessayez dans un instant.",
+    "aiBadAnswer": "La réponse de l'IA n'a pas pu être lue. Réessayez.",
+    "fileTooLarge": "Le fichier dépasse 25 Mo.",
+    "unsafeLink": "Le lien doit commencer par http:// ou https://."
   }
 }
