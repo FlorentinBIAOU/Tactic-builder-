@@ -13,6 +13,8 @@ import {
   fetchLessonTime,
   fetchLessonFunnel,
   fetchRetention,
+  fetchDemoStatus,
+  type DemoStatus,
   fetchQuizTradingCorr,
   type LessonTime,
   type FunnelStep,
@@ -401,9 +403,12 @@ function LearningAnalytics({
   const [retention, setRetention] = useState<Retention | null | undefined>(undefined);
   const [corr, setCorr] = useState<CorrPoint[] | null | undefined>(undefined);
   const [funnel, setFunnel] = useState<FunnelStep[] | null>(null);
+  const [funnelError, setFunnelError] = useState(false);
   const [funnelLesson, setFunnelLesson] = useState<string>('');
+  const [demo, setDemo] = useState<DemoStatus | null>(null);
 
   useEffect(() => {
+    fetchDemoStatus().then(setDemo).catch(() => setDemo(null));
     fetchLessonTime(15).then(setTime).catch(() => setTime(null));
     fetchRetention().then(setRetention).catch(() => setRetention(null));
     fetchQuizTradingCorr(300).then(setCorr).catch(() => setCorr(null));
@@ -416,7 +421,13 @@ function LearningAnalytics({
 
   useEffect(() => {
     if (!funnelLesson) return;
-    fetchLessonFunnel(funnelLesson).then(setFunnel).catch(() => setFunnel(null));
+    setFunnelError(false);
+    fetchLessonFunnel(funnelLesson)
+      .then(setFunnel)
+      .catch(() => {
+        setFunnel(null);
+        setFunnelError(true);
+      });
   }, [funnelLesson]);
 
   const realRetention = !!retention; // RPC deployed
@@ -431,6 +442,14 @@ function LearningAnalytics({
       <h2 className={styles.sectionTitle}>Learning analytics</h2>
 
       {loading ? <Loader label="Loading learning analytics…" /> : null}
+
+      {demo && demo.demoRows > 0 ? (
+        <div className={styles.notice} role="status">
+          <strong>Demo data.</strong> {demo.demoRows} of {demo.demoRows + demo.realRows} analytics
+          rows come from the demo seed, not from real learners. Do not base decisions on these
+          figures.
+        </div>
+      ) : null}
 
       {/* Retention */}
       <div className={styles.kpis}>
@@ -463,8 +482,8 @@ function LearningAnalytics({
         {realCorr ? (
           <>
             <p className={styles.cardNote}>
-              Each point is a trading-sim session: quiz completion (x) vs PnL (y), from real event
-              data ({corr!.length} sessions).
+              Each point is a trading-sim session: quiz completion (x) vs PnL (y), from event data
+              ({corr!.length} sessions).
             </p>
             <CorrScatter points={corr!.map((p) => ({ x: p.quizCompletion, y: p.pnl }))} />
           </>
@@ -492,7 +511,7 @@ function LearningAnalytics({
 
       {/* Time-on-lesson */}
       {realTime ? (
-        <Card title="Real-time spent per lesson (avg)">
+        <Card title="Time spent per lesson (avg)">
           <BarRow
             items={time!.map((t) => ({
               label: lessonLabel(t.lessonId, quality),
@@ -527,6 +546,8 @@ function LearningAnalytics({
                 color="var(--purple)"
                 labelWidth={16}
               />
+            ) : funnelError ? (
+              <div className={styles.notice}>The funnel could not be loaded. Try again later.</div>
             ) : (
               <div className={styles.notice}>No funnel data for this lesson.</div>
             )}

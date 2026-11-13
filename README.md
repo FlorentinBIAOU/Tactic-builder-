@@ -32,7 +32,7 @@ VITE_SUPABASE_ANON_KEY=<anon key>
 
 ## Supabase setup (one-time)
 
-Apply both migrations to the shared project:
+Apply the migrations, in order, to the shared project:
 
 | Migration                          | Adds                                                                          |
 | ---------------------------------- | ----------------------------------------------------------------------------- |
@@ -41,11 +41,19 @@ Apply both migrations to the shared project:
 | `0004_feedback.sql`                | `corpus_tracks.theme`, `corpus_lessons.summary`, widened resource kinds, `admin_agent_reports` (report history), `marketing_campaigns` + `admin_marketing_kpis()`, `admin_audit_log` + `admin_list_members()` / `admin_set_role()` |
 | `0005_events.sql`                  | `lesson_events` / `trading_sim_results` / `marketing_touchpoints` + RPCs `admin_lesson_time` / `admin_lesson_funnel` / `admin_retention` / `admin_quiz_trading_corr` / `admin_channel_attribution` (real learning + attribution analytics) |
 | `0006_domains.sql`                 | `corpus_domains` (Domain → Module → Lesson), `corpus_tracks.domain_id` + `core_question`, public `resources` Storage bucket for file uploads |
+| `0007_security_data_fixes.sql`     | Locks `profiles.role` (only `admin_set_role` / service role can change it), last-admin race fix, read-only audit log for clients, bounds + `is_demo` on event tables, fixed `admin_lesson_funnel`, D+N retention cohorts, `admin_demo_status()`, lessons default to `draft`, http(s)-only resource links, Storage size/type limits, AI quota (`admin_ai_usage`, `admin_ai_consume`) |
 
-**Option A — SQL editor (simplest):** paste each file into the Supabase
+**Option A — SQL editor (recommended):** paste each file into the Supabase
 dashboard → SQL editor and run it (all are idempotent).
 
-**Option B — CLI:**
+Before applying `0007`, check how the mobile app creates profile rows: the
+new trigger forces `role = 'learner'` on inserts made with the anon /
+authenticated roles, and ignores role changes from those roles (the current
+role is kept). A signup trigger such as `handle_new_user` must never copy
+`role` from `raw_user_meta_data`.
+
+**Option B — CLI** (only if this repo owns the migration history of the
+project; the project is shared with the mobile app, whose `0001` is not here):
 
 ```sh
 supabase link --project-ref twjyajjfndsquhctxgvm
@@ -69,12 +77,20 @@ supabase functions deploy admin-ai --no-verify-jwt
 # Collaborator invites (Members tab) use the service-role key. It is
 # injected automatically in the Supabase runtime as SUPABASE_SERVICE_ROLE_KEY,
 # so no extra secret is normally needed.
+#
+# Optional:
+# supabase secrets set ADMIN_SITE_URL=https://<admin domain>   # invite links + CORS
+# supabase secrets set ADMIN_EXTRA_ORIGINS=http://localhost:5173  # extra CORS origins
+# supabase secrets set AI_DAILY_LIMIT=200                      # AI calls per admin per day
 ```
 
 The function is admin-gated — it verifies the caller's JWT and rejects
 anyone whose `profiles.role !== 'admin'` with a 403, so the OpenAI key
-never reaches the browser. The `invite` task additionally uses the
-service-role key to send the Supabase Auth invite and pre-assign the role.
+never reaches the browser. Request bodies are capped at 200 KB, text fields
+are clipped, OpenAI calls time out after 60 s and each admin has a daily
+quota. The `invite` task uses the service-role key to send the Supabase
+Auth invite and assign a non-admin role; promote to admin from the
+Collaborators list.
 
 ## Deploy (Vercel)
 
@@ -134,7 +150,9 @@ legacy/                      # original HTML app (read-only reference)
   drop-off funnel per lesson, real-time-spent per lesson, D+7/D+30 retention,
   Quiz-completion ↔ simulated-trading-PnL scatter, and channel attribution. Each
   dashboard reads its event table; until the **mobile app** writes those events, run
-  `supabase/seed/demo_analytics.sql` to populate clearly-labelled DEMO data. With no
+  `supabase/seed/demo_analytics.sql` to populate DEMO data (rows flagged `is_demo`, shown
+  with a banner in Stats; remove them with the CLEANUP block of the seed). Run the seed
+  on a staging project only: it refuses to run once real events exist. With no
   events at all, the views fall back to honest proxies (streak-based retention, quiz
   drop-off) rather than blank charts.
 - **Admin & permissions** — Collaborators tab: invite, assign roles, audit log.

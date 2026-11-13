@@ -70,13 +70,16 @@ export async function upsertLesson(lesson: Lesson): Promise<Lesson> {
   return rowToLesson(data as LessonRow);
 }
 
-/** Bulk insert (used by the Phase 3 seed/import). Ignores conflicts. */
+/**
+ * Bulk insert for imports. Rows whose id already exists are skipped (never
+ * overwritten). Returns the number of rows actually created.
+ */
 export async function insertLessons(lessons: Lesson[]): Promise<number> {
   if (lessons.length === 0) return 0;
   const rows = lessons.map(lessonToRow);
   const { data, error } = await supabase
     .from('corpus_lessons')
-    .upsert(rows, { onConflict: 'id' })
+    .upsert(rows, { onConflict: 'id', ignoreDuplicates: true })
     .select('id');
   if (error) throw error;
   return (data ?? []).length;
@@ -103,7 +106,7 @@ export async function insertTracks(tracks: Track[]): Promise<number> {
   if (tracks.length === 0) return 0;
   const { data, error } = await supabase
     .from('corpus_tracks')
-    .upsert(tracks.map(trackToRow), { onConflict: 'id' })
+    .upsert(tracks.map(trackToRow), { onConflict: 'id', ignoreDuplicates: true })
     .select('id');
   if (error) throw error;
   return (data ?? []).length;
@@ -139,7 +142,7 @@ export async function insertDomains(domains: Domain[]): Promise<number> {
   if (domains.length === 0) return 0;
   const { data, error } = await supabase
     .from('corpus_domains')
-    .upsert(domains.map(domainToRow), { onConflict: 'id' })
+    .upsert(domains.map(domainToRow), { onConflict: 'id', ignoreDuplicates: true })
     .select('id');
   if (error) throw error;
   return (data ?? []).length;
@@ -152,13 +155,56 @@ export async function deleteDomain(id: string): Promise<void> {
 
 // ─── File upload (resource library) ────────────────────────────────────────
 
+/** File types accepted by the `resources` bucket (see migration 0007). */
+export const RESOURCE_FILE_ACCEPT = '.pdf,.png,.jpg,.jpeg,.webp,.gif,.mp3,.m4a,.wav,.ogg,.txt,.md';
+export const RESOURCE_FILE_MAX_BYTES = 25 * 1024 * 1024;
+
+const EXT_TYPES: Record<string, string> = {
+  pdf: 'application/pdf',
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  webp: 'image/webp',
+  gif: 'image/gif',
+  mp3: 'audio/mpeg',
+  m4a: 'audio/mp4',
+  wav: 'audio/wav',
+  ogg: 'audio/ogg',
+  txt: 'text/plain',
+  md: 'text/markdown',
+};
+
+function contentTypeFor(file: File): string {
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+  return EXT_TYPES[ext] ?? (file.type || 'application/octet-stream');
+}
+
+/** Read one lesson's current blocks from the database. */
+export async function fetchLessonBlocks(id: string): Promise<unknown[]> {
+  const { data, error } = await supabase
+    .from('corpus_lessons')
+    .select('blocks')
+    .eq('id', id)
+    .maybeSingle();
+  if (error) throw error;
+  return Array.isArray((data as { blocks?: unknown } | null)?.blocks)
+    ? ((data as { blocks: unknown[] }).blocks)
+    : [];
+}
+
 /** Upload a file to the public `resources` bucket; returns its public URL. */
 export async function uploadResourceFile(file: File): Promise<string> {
+  if (file.size > RESOURCE_FILE_MAX_BYTES) {
+    throw new Error('File is larger than 25 MB.');
+  }
   const safe = file.name.replace(/[^a-zA-Z0-9.\-_]+/g, '-');
   const path = `${Date.now()}-${safe}`;
   const { error } = await supabase.storage.from('resources').upload(path, file, {
     cacheControl: '3600',
     upsert: false,
+    // Browsers report some types inconsistently (.md, .m4a): send the type
+    // the bucket expects, based on the extension.
+    contentType: contentTypeFor(file),
   });
   if (error) throw error;
   const { data } = supabase.storage.from('resources').getPublicUrl(path);
@@ -167,9 +213,22 @@ export async function uploadResourceFile(file: File): Promise<string> {
 
 // ─── Resource writes ───────────────────────────────────────────────────────
 
+/** Only http(s) links are allowed (blocks `javascript:` and similar). */
+export function isSafeUrl(url: string): boolean {
+  try {
+    const u = new URL(url.trim());
+    return u.protocol === 'https:' || u.protocol === 'http:';
+  } catch {
+    return false;
+  }
+}
+
 export async function upsertResource(
   r: Omit<Resource, 'id' | 'createdAt'> & { id?: string }
 ): Promise<Resource> {
+  if (!isSafeUrl(r.url)) {
+    throw new Error('Links must start with http:// or https://');
+  }
   const row: Partial<ResourceRow> = {
     ...(r.id ? { id: r.id } : {}),
     kind: r.kind,
@@ -208,6 +267,9 @@ export function corpusErrorMessage(err: unknown): string {
   }
   if (e.code === '42501' || /row-level security/i.test(e.message ?? '')) {
     return 'Permission denied — admin role required.';
+  }
+  if (e.code === '23514') {
+    return 'This value is not allowed (check links and numbers).';
   }
   return e.message ?? 'Request failed';
 }

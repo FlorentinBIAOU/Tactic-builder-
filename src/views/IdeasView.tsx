@@ -88,7 +88,7 @@ export default function IdeasView() {
       blocks: [],
       quizzes: [{ q: '', opts: ['', '', '', ''], correct: 0, expl: '' }],
       translations: {},
-      status: 'published',
+      status: 'draft',
     });
     toast('Editor opened — use AI Generate to fill the body.', 'info');
   };

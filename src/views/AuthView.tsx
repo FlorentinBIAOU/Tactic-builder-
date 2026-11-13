@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { supabase, takeInitialAuthHash } from '@/lib/supabase';
 import { useAuth } from '@/store/auth';
 import styles from './AuthView.module.css';
 
@@ -30,6 +30,7 @@ export default function AuthView() {
   const { signIn, resetPassword, updatePassword } = useAuth();
 
   const [mode, setMode] = useState<Mode>('login');
+  const [invited, setInvited] = useState(false);
   const [alert, setAlert] = useState<Alert>(null);
   const [busy, setBusy] = useState(false);
 
@@ -43,13 +44,16 @@ export default function AuthView() {
   const strength = useMemo(() => pwStrength(newPw), [newPw]);
   const pwMismatch = newPwConfirm.length > 0 && newPwConfirm !== newPw;
 
-  // Detect arrival from a password-recovery email → switch to reset mode.
+  // Show the set-password form only when the page was opened from a
+  // recovery or invite email link (token in the URL hash). A plain
+  // `?reset=1` on an open session is not enough.
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const isRecovery =
-      url.searchParams.get('reset') === '1' ||
-      window.location.hash.includes('type=recovery');
-    if (isRecovery) setMode('reset');
+    const hash = takeInitialAuthHash();
+    if (hash.includes('type=recovery')) setMode('reset');
+    if (hash.includes('type=invite')) {
+      setInvited(true);
+      setMode('reset');
+    }
 
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') setMode('reset');
@@ -132,6 +136,8 @@ export default function AuthView() {
               ? 'Welcome back'
               : mode === 'forgot'
               ? 'Reset password'
+              : invited
+              ? 'Set your password'
               : 'Set a new password'}
           </div>
           <div className={styles.cardSub}>
@@ -139,6 +145,8 @@ export default function AuthView() {
               ? 'Sign in to manage lessons, content and users.'
               : mode === 'forgot'
               ? "We'll email you a secure reset link."
+              : invited
+              ? 'Welcome to the team. Choose a password to finish setting up your account.'
               : 'Choose a new password for your account.'}
           </div>
         </div>

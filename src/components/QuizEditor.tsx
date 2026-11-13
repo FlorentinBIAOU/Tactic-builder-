@@ -24,7 +24,9 @@ export default function QuizEditor({ quiz, index, onChange, onDelete }: Props) {
   const delOpt = (i: number) => {
     if (quiz.opts.length <= 2) return;
     const opts = quiz.opts.filter((_, k) => k !== i);
-    const correct = quiz.correct >= opts.length ? opts.length - 1 : quiz.correct;
+    // Keep the same option marked correct: shift the index when an earlier
+    // option is removed; fall back to the first option if it was removed.
+    const correct = i < quiz.correct ? quiz.correct - 1 : i === quiz.correct ? 0 : quiz.correct;
     onChange({ opts, correct });
   };
 
