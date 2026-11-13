@@ -1,0 +1,88 @@
+{
+  "title": "Import and export",
+  "description": "Add lessons to the corpus or download it as a file for the mobile app.",
+  "safe": {
+    "title": "Imports never overwrite what exists",
+    "body": "Only what is missing is added. A lesson or module that already exists (same identifier) is skipped and your changes stay intact. Added lessons arrive as drafts."
+  },
+  "import": {
+    "heading": "Import",
+    "syllabus": {
+      "title": "Full syllabus",
+      "body": "Creates the structure of the official syllabus: domains, modules and lesson titles. Lesson content is still to be written.",
+      "meta": "{{domains}} domains, {{modules}} modules, {{lessons}} lessons",
+      "present_one": "{{count}} syllabus lesson already in the corpus",
+      "present_other": "{{count}} syllabus lessons already in the corpus",
+      "action": "Import the syllabus",
+      "confirmTitle": "Import the full syllabus?",
+      "confirmBody": "{{domains}} domains, {{modules}} modules and {{lessons}} lessons will be added if they do not exist yet. Nothing that exists will be changed. New lessons arrive as drafts, without content.",
+      "confirm": "Import"
+    },
+    "seed": {
+      "title": "Starter corpus",
+      "body": "The lessons from the first version of TACTIC, with their modules. Only titles and settings are imported, not the content.",
+      "meta": "{{lessons}} lessons, {{modules}} modules",
+      "present_one": "{{count}} starter lesson already in the corpus",
+      "present_other": "{{count}} starter lessons already in the corpus",
+      "action": "Import the starter corpus",
+      "confirmTitle": "Import the starter corpus?",
+      "confirmBody": "{{lessons}} lessons and {{modules}} modules will be added if they do not exist yet. Nothing that exists will be changed. New lessons arrive as drafts.",
+      "confirm": "Import"
+    },
+    "file": {
+      "title": "JSON file from your computer",
+      "body": "A file exported from this page, or a corpus in the same format. You will see what gets added before confirming.",
+      "action": "Choose a file",
+      "reading": "Reading the file…",
+      "errorTitle": "This file could not be read",
+      "errorJson": "The file is not valid JSON. Check that it is a TACTIC export.",
+      "errorEmpty": "No lessons or modules found in this file.",
+      "errorSize": "The file is larger than {{max}} MB.",
+      "errorRead": "The file could not be opened. Try another file."
+    },
+    "loadingCounts": "Counting…",
+    "busy": "Importing…"
+  },
+  "preview": {
+    "title": "Preview before import",
+    "description": "File: {{name}}",
+    "newLessons": "Lessons added",
+    "existingLessons": "Lessons already there, skipped",
+    "newModules": "Modules added",
+    "existingModules": "Modules already there, skipped",
+    "drafts": "Added lessons arrive as drafts: review them before publishing.",
+    "detached_one": "{{count}} lesson points to a module that cannot be found. It will be imported without a module.",
+    "detached_other": "{{count}} lessons point to a module that cannot be found. They will be imported without a module.",
+    "duplicates_one": "{{count}} duplicate item in the file is counted once.",
+    "duplicates_other": "{{count}} duplicate items in the file are counted once.",
+    "nothing": "Everything in this file already exists. There is nothing to add.",
+    "confirm_one": "Import {{count}} lesson",
+    "confirm_other": "Import {{count}} lessons",
+    "confirmModules": "Import the modules"
+  },
+  "export": {
+    "heading": "Export",
+    "body": "The corpus in the mobile app format, to bundle into the app or keep as a backup. The app can also read published lessons directly online.",
+    "lessons": "Lessons",
+    "modules": "Modules",
+    "published": "Published",
+    "drafts": "Drafts",
+    "includeDrafts": "Include drafts",
+    "includeDraftsHint": "Off: only published lessons and their modules are exported.",
+    "download": "Download the file",
+    "copy": "Copy the JSON",
+    "copied": "JSON copied to the clipboard",
+    "copyFailed": "Copying did not work. Use “Download the file” instead.",
+    "downloaded": "File downloaded",
+    "showPreview": "Show file preview",
+    "hidePreview": "Hide file preview",
+    "previewTruncated": "Preview limited to the first {{count}} characters. The full file is {{size}}.",
+    "emptyTitle": "Nothing to export yet",
+    "emptyBody": "The corpus has no lessons. Import the syllabus or the starter corpus above.",
+    "emptyPublished": "No published lessons. Turn on “Include drafts” to export the whole corpus."
+  },
+  "loadError": {
+    "title": "The corpus could not be loaded",
+    "body": "Imports and export are unavailable until the corpus loads, so nothing gets miscounted."
+  }
+}

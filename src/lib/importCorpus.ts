@@ -98,3 +98,57 @@ export function normalizeImport(
   return { tracks, lessons };
 }
 
+
+export type ImportPlan = {
+  /** Every track/lesson to send to the database (duplicates removed,
+   *  unknown modules detached). Rows that already exist are skipped by the
+   *  database, never overwritten. */
+  tracks: Track[];
+  lessons: Lesson[];
+  newTracks: number;
+  existingTracks: number;
+  newLessons: number;
+  existingLessons: number;
+  /** Lessons pointing at a module found neither in the file nor in the
+   *  corpus: imported without a module instead of failing the whole file. */
+  detachedLessons: number;
+  /** Rows that appeared twice in the file; only the first one is kept. */
+  duplicateRows: number;
+};
+
+function firstById<T extends { id: string }>(rows: T[]): T[] {
+  const seen = new Set<string>();
+  return rows.filter((r) => (seen.has(r.id) ? false : (seen.add(r.id), true)));
+}
+
+/**
+ * What an import will do, computed before anything is written: how many
+ * lessons and modules are new, how many already exist (and will be left
+ * untouched). Pure — unit-tested.
+ */
+export function planImport(
+  parsed: { tracks: Track[]; lessons: Lesson[] },
+  existing: { trackIds: Iterable<string>; lessonIds: Iterable<string> }
+): ImportPlan {
+  const trackIds = new Set(existing.trackIds);
+  const lessonIds = new Set(existing.lessonIds);
+  const tracks = firstById(parsed.tracks);
+  const uniqueLessons = firstById(parsed.lessons);
+  const known = new Set([...trackIds, ...tracks.map((t) => t.id)]);
+
+  const lessons = uniqueLessons.map((l) => (l.trackId && !known.has(l.trackId) ? { ...l, trackId: null } : l));
+
+  const existingTracks = tracks.filter((t) => trackIds.has(t.id)).length;
+  const existingLessons = lessons.filter((l) => lessonIds.has(l.id)).length;
+  return {
+    tracks,
+    lessons,
+    newTracks: tracks.length - existingTracks,
+    existingTracks,
+    newLessons: lessons.length - existingLessons,
+    existingLessons,
+    // Only new lessons matter: existing ones are skipped anyway.
+    detachedLessons: lessons.filter((l, i) => uniqueLessons[i].trackId !== l.trackId && !lessonIds.has(l.id)).length,
+    duplicateRows: parsed.tracks.length - tracks.length + parsed.lessons.length - uniqueLessons.length,
+  };
+}

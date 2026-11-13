@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeImport } from './importCorpus';
+import { normalizeImport, planImport } from './importCorpus';
 
 describe('normalizeImport', () => {
   it('reads the mobile export shape and imports lessons as drafts', () => {
@@ -51,5 +51,33 @@ describe('normalizeImport', () => {
 
   it('accepts a bare array of lessons', () => {
     expect(normalizeImport([{ id: 'a', name: 'A' }], new Set()).lessons).toHaveLength(1);
+  });
+});
+
+describe('planImport', () => {
+  const parsed = normalizeImport(
+    {
+      tracks: [{ id: 't1', name: 'Budget' }, { id: 't-old', name: 'Old' }, { id: 't1', name: 'Again' }],
+      lessons: [
+        { id: 'a', trackId: 't1', name: 'A' },
+        { id: 'b', trackId: 'ghost', name: 'B' },
+        { id: 'old', trackId: 'ghost', name: 'Old one' },
+        { id: 'a', name: 'A twice' },
+        { id: 'c', trackId: 't-db', name: 'C' },
+      ],
+    },
+    new Set()
+  );
+  const plan = planImport(parsed, { trackIds: ['t-old', 't-db'], lessonIds: ['old'] });
+
+  it('counts new and existing rows', () => {
+    expect(plan).toMatchObject({ newTracks: 1, existingTracks: 1, newLessons: 3, existingLessons: 1, duplicateRows: 2 });
+    expect(plan.lessons.map((l) => l.id)).toEqual(['a', 'b', 'old', 'c']);
+  });
+
+  it('detaches lessons whose module exists nowhere, keeps known ones', () => {
+    const byId = Object.fromEntries(plan.lessons.map((l) => [l.id, l.trackId]));
+    expect(byId).toEqual({ a: 't1', b: null, old: null, c: 't-db' });
+    expect(plan.detachedLessons).toBe(1);
   });
 });
