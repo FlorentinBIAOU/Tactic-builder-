@@ -224,7 +224,7 @@ export default function ExploreView() {
                   <div className={styles.emptyTitle}>The corpus is empty.</div>
                   <div className={styles.emptySub}>
                     Create a lesson, or{' '}
-                    <Link to="/content" className={styles.link}>
+                    <Link to="/structure" className={styles.link}>
                       import the full syllabus
                     </Link>{' '}
                     from the Content tab.

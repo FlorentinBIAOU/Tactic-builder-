@@ -1,0 +1,112 @@
+@import '@fontsource-variable/instrument-sans';
+@import '@fontsource/bungee/400.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * TACTIC admin — design tokens.
+ * Dark teal + gold is the brand DNA. Dark is the default theme; light is
+ * opt-in from the top bar. Values are RGB triplets for Tailwind alpha.
+ * Contrast: `muted` text is ≥ 4.5:1 on `surface` in both themes,
+ * `border-input` ≥ 3:1 against its background.
+ */
+:root,
+[data-theme='dark'] {
+  --c-background: 9 36 43;      /* #09242B deep teal ink */
+  --c-surface: 14 47 56;        /* #0E2F38 */
+  --c-surface-2: 20 60 70;      /* #143C46 */
+  --c-border: 36 77 87;         /* #244D57 */
+  --c-input: 94 133 140;        /* #5E858C control border */
+  --c-foreground: 234 244 242;  /* #EAF4F2 */
+  --c-muted: 160 190 188;       /* #A0BEBC */
+  --c-primary: 245 197 66;      /* #F5C542 TACTIC gold */
+  --c-primary-foreground: 33 24 0;
+  --c-brand: 245 197 66;
+  --c-brand-soft: 64 72 40;     /* gold tint on teal */
+  --c-success: 86 201 146;
+  --c-danger: 244 128 116;
+  --c-warning: 240 172 74;
+  --c-info: 120 184 240;
+  --c-ring: 245 197 66;
+  color-scheme: dark;
+}
+
+[data-theme='light'] {
+  --c-background: 241 246 245;  /* #F1F6F5 */
+  --c-surface: 255 255 255;
+  --c-surface-2: 231 239 238;
+  --c-border: 211 224 222;
+  --c-input: 128 152 150;
+  --c-foreground: 12 42 48;     /* #0C2A30 */
+  --c-muted: 74 101 99;         /* #4A6563 */
+  --c-primary: 13 88 92;        /* deep teal for actions in light */
+  --c-primary-foreground: 255 255 255;
+  --c-brand: 176 124 0;         /* gold, darkened for light backgrounds */
+  --c-brand-soft: 252 240 204;
+  --c-success: 22 128 78;
+  --c-danger: 190 50 38;
+  --c-warning: 160 92 0;
+  --c-info: 27 105 176;
+  --c-ring: 13 88 92;
+  color-scheme: light;
+}
+
+/*
+ * Legacy variables used by the CSS modules of views not yet redesigned.
+ * Mapped onto the new palette so old and new screens sit together.
+ */
+:root,
+[data-theme] {
+  --bg: rgb(var(--c-background));
+  --bg1: rgb(var(--c-surface));
+  --bg2: rgb(var(--c-surface-2));
+  --bg3: rgb(var(--c-border));
+  --gold: rgb(var(--c-brand));
+  --gold2: rgb(var(--c-brand) / 0.12);
+  --gold3: rgb(var(--c-brand) / 0.25);
+  --green: rgb(var(--c-success));
+  --red: rgb(var(--c-danger));
+  --blue: rgb(var(--c-info));
+  --purple: rgb(var(--c-info));
+  --orange: rgb(var(--c-warning));
+  --txt: rgb(var(--c-foreground));
+  --muted: rgb(var(--c-muted));
+  --soft: rgb(var(--c-foreground) / 0.9);
+  --border: rgb(var(--c-border));
+  --border2: rgb(var(--c-input) / 0.6);
+  --font-title: 'Instrument Sans Variable', system-ui, sans-serif;
+  --font-body: 'Instrument Sans Variable', system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-background text-foreground font-sans text-base;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+  :focus-visible {
+    outline: 2px solid rgb(var(--c-ring));
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: rgb(var(--c-brand) / 0.35);
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

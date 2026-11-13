@@ -1,0 +1,97 @@
+{
+  "app": {
+    "name": "TACTIC Admin",
+    "tagline": "Gestion du corpus Tactic Academy"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "groups": {
+      "content": "Contenu",
+      "ai": "Intelligence artificielle",
+      "insights": "Pilotage",
+      "admin": "Administration"
+    },
+    "lessons": "Leçons",
+    "structure": "Structure",
+    "library": "Bibliothèque",
+    "importExport": "Import et export",
+    "ideas": "Idées",
+    "agents": "Agents",
+    "stats": "Statistiques",
+    "marketing": "Marketing",
+    "team": "Équipe",
+    "openMenu": "Ouvrir le menu",
+    "mainNav": "Navigation principale",
+    "skip": "Aller au contenu"
+  },
+  "topbar": {
+    "search": "Rechercher",
+    "searchPlaceholder": "Rechercher une leçon, une page, une action…",
+    "assistant": "Robot Tact",
+    "language": "Langue",
+    "theme": "Thème",
+    "themeDark": "Sombre",
+    "themeLight": "Clair",
+    "account": "Compte",
+    "signOut": "Se déconnecter",
+    "signedInAs": "Connecté en tant que"
+  },
+  "command": {
+    "pages": "Pages",
+    "lessons": "Leçons",
+    "actions": "Actions",
+    "newLesson": "Créer une leçon",
+    "openAssistant": "Ouvrir Robot Tact",
+    "empty": "Aucun résultat."
+  },
+  "assistant": {
+    "title": "Robot Tact",
+    "subtitle": "Assistant du corpus",
+    "welcome": "Posez une question sur le corpus : manques, prochaines leçons à écrire, fonctionnement d'une page, statistiques.",
+    "suggestions": [
+      "Sur quoi travailler en priorité ?",
+      "Quels modules manquent de leçons ?",
+      "Comment ajouter un domaine ?"
+    ],
+    "placeholder": "Écrire à Robot Tact…",
+    "send": "Envoyer",
+    "thinking": "Robot Tact réfléchit…",
+    "error": "Robot Tact n'a pas pu répondre : {{error}}",
+    "clear": "Nouvelle conversation"
+  },
+  "actions": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "duplicate": "Dupliquer",
+    "retry": "Réessayer",
+    "create": "Créer",
+    "add": "Ajouter",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "preview": "Aperçu",
+    "more": "Plus d'actions",
+    "copy": "Copier",
+    "download": "Télécharger"
+  },
+  "states": {
+    "loading": "Chargement…",
+    "saving": "Enregistrement…",
+    "saved": "Enregistré",
+    "error": "Une erreur est survenue.",
+    "pageError": "Cette page a rencontré une erreur.",
+    "pageErrorHelp": "Vos données ne sont pas touchées. Réessayez, ou rechargez la page si le problème continue.",
+    "notFound": "Page introuvable"
+  },
+  "status": {
+    "draft": "Brouillon",
+    "published": "Publiée"
+  },
+  "accessDenied": {
+    "title": "Accès réservé aux administrateurs",
+    "body": "Votre compte {{email}} n'a pas le rôle administrateur. Demandez à un administrateur de vous l'attribuer depuis la page Équipe.",
+    "noProfile": "Impossible de lire votre profil. Vérifiez votre connexion puis réessayez."
+  }
+}

@@ -47,7 +47,7 @@ function kindFromFile(file: File): ResourceKind {
 
 type Section = 'library' | 'syllabus' | 'modules' | 'domains';
 
-export default function ContentView() {
+export default function ContentView({ initialSection = 'library' }: { initialSection?: Section }) {
   const loaded = useCorpus((s) => s.loaded);
   const loading = useCorpus((s) => s.loading);
   const load = useCorpus((s) => s.load);
@@ -60,7 +60,7 @@ export default function ContentView() {
   const deleteDomain = useCorpus((s) => s.deleteDomain);
   const importSyllabus = useCorpus((s) => s.importSyllabus);
 
-  const [section, setSection] = useState<Section>('library');
+  const [section, setSection] = useState<Section>(initialSection);
   const [resources, setResources] = useState<Resource[]>([]);
   const [resLoading, setResLoading] = useState(true);
 

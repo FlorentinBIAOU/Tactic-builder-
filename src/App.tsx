@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect } from 'react';
-import Loader from '@/components/Loader';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth } from '@/store/auth';
 import RequireAdmin from '@/components/RequireAdmin';
@@ -29,7 +28,7 @@ export default function App() {
           path="/auth"
           element={
             <ErrorBoundary>
-              <Suspense fallback={<Loader full />}>
+              <Suspense fallback={null}>
                 <AuthView />
               </Suspense>
             </ErrorBoundary>
@@ -43,18 +42,27 @@ export default function App() {
             </RequireAdmin>
           }
         >
-          <Route index element={<Navigate to="/explore" replace />} />
-          <Route path="/explore" element={<ExploreView />} />
+          <Route index element={<Navigate to="/lessons" replace />} />
+          {/* Dashboard page arrives in sprint 5; statistics until then. */}
+          <Route path="/dashboard" element={<StatsView />} />
+          <Route path="/lessons" element={<ExploreView />} />
+          <Route path="/structure" element={<ContentView initialSection="modules" key="structure" />} />
+          <Route path="/library" element={<ContentView initialSection="library" key="library" />} />
+          <Route path="/import-export" element={<ExportView />} />
           <Route path="/ideas" element={<IdeasView />} />
-          <Route path="/content" element={<ContentView />} />
-          <Route path="/export" element={<ExportView />} />
+          <Route path="/agents" element={<AgentsView />} />
           <Route path="/stats" element={<StatsView />} />
           <Route path="/marketing" element={<MarketingView />} />
-          <Route path="/agents" element={<AgentsView />} />
-          <Route path="/members" element={<MembersView />} />
+          <Route path="/team" element={<MembersView />} />
+
+          {/* Old addresses still work. */}
+          <Route path="/explore" element={<Navigate to="/lessons" replace />} />
+          <Route path="/content" element={<Navigate to="/structure" replace />} />
+          <Route path="/export" element={<Navigate to="/import-export" replace />} />
+          <Route path="/members" element={<Navigate to="/team" replace />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/explore" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
       <ToastHost />

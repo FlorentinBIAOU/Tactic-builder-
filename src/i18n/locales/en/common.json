@@ -1,0 +1,97 @@
+{
+  "app": {
+    "name": "TACTIC Admin",
+    "tagline": "Tactic Academy corpus management"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "groups": {
+      "content": "Content",
+      "ai": "Artificial intelligence",
+      "insights": "Insights",
+      "admin": "Administration"
+    },
+    "lessons": "Lessons",
+    "structure": "Structure",
+    "library": "Library",
+    "importExport": "Import and export",
+    "ideas": "Ideas",
+    "agents": "Agents",
+    "stats": "Statistics",
+    "marketing": "Marketing",
+    "team": "Team",
+    "openMenu": "Open menu",
+    "mainNav": "Main navigation",
+    "skip": "Skip to content"
+  },
+  "topbar": {
+    "search": "Search",
+    "searchPlaceholder": "Search a lesson, a page, an action…",
+    "assistant": "Robot Tact",
+    "language": "Language",
+    "theme": "Theme",
+    "themeDark": "Dark",
+    "themeLight": "Light",
+    "account": "Account",
+    "signOut": "Sign out",
+    "signedInAs": "Signed in as"
+  },
+  "command": {
+    "pages": "Pages",
+    "lessons": "Lessons",
+    "actions": "Actions",
+    "newLesson": "Create a lesson",
+    "openAssistant": "Open Robot Tact",
+    "empty": "No results."
+  },
+  "assistant": {
+    "title": "Robot Tact",
+    "subtitle": "Corpus assistant",
+    "welcome": "Ask about the corpus: gaps, which lessons to write next, how a page works, statistics.",
+    "suggestions": [
+      "What should I work on first?",
+      "Which modules are short on lessons?",
+      "How do I add a domain?"
+    ],
+    "placeholder": "Message Robot Tact…",
+    "send": "Send",
+    "thinking": "Robot Tact is thinking…",
+    "error": "Robot Tact could not answer: {{error}}",
+    "clear": "New conversation"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "edit": "Edit",
+    "duplicate": "Duplicate",
+    "retry": "Try again",
+    "create": "Create",
+    "add": "Add",
+    "confirm": "Confirm",
+    "back": "Back",
+    "preview": "Preview",
+    "more": "More actions",
+    "copy": "Copy",
+    "download": "Download"
+  },
+  "states": {
+    "loading": "Loading…",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "error": "Something went wrong.",
+    "pageError": "This page hit an error.",
+    "pageErrorHelp": "Your data is safe. Try again, or reload the page if it keeps happening.",
+    "notFound": "Page not found"
+  },
+  "status": {
+    "draft": "Draft",
+    "published": "Published"
+  },
+  "accessDenied": {
+    "title": "Administrators only",
+    "body": "Your account {{email}} does not have the administrator role. Ask an administrator to grant it from the Team page.",
+    "noProfile": "Your profile could not be read. Check your connection and try again."
+  }
+}

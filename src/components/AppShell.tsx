@@ -1,72 +1,83 @@
 import { Suspense } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import * as D from '@radix-ui/react-dialog';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import Loader from '@/components/Loader';
-import { useAuth } from '@/store/auth';
+import { Skeleton } from '@/components/ui/feedback';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { SidebarNav, Wordmark } from '@/components/shell/Sidebar';
+import { Topbar } from '@/components/shell/Topbar';
+import { CommandPalette } from '@/components/shell/CommandPalette';
+import { AssistantPanel } from '@/components/shell/AssistantPanel';
+import { useShell } from '@/components/shell/store';
 import LessonEditorDrawer from '@/views/LessonEditorDrawer';
 import PreviewDrawer from '@/views/PreviewDrawer';
-import RobotTact from '@/components/RobotTact';
-import styles from './AppShell.module.css';
 
-const TABS = [
-  { to: '/explore', label: 'Explore' },
-  { to: '/ideas', label: 'Ideas' },
-  { to: '/content', label: 'Content' },
-  { to: '/export', label: 'Export' },
-  { to: '/stats', label: 'Stats' },
-  { to: '/marketing', label: 'Marketing' },
-  { to: '/agents', label: 'AI Agents' },
-  { to: '/members', label: 'Collaborators' },
-];
+function PageSkeleton() {
+  return (
+    <div className="flex flex-col gap-4" aria-busy>
+      <Skeleton className="h-8 w-56" />
+      <Skeleton className="h-4 w-96 max-w-full" />
+      <Skeleton className="mt-4 h-64 w-full" />
+    </div>
+  );
+}
 
-/** Topbar + tab nav + routed content. Wraps every admin route. */
+/** App frame: grouped sidebar, top bar, routed page, global panels. */
 export default function AppShell() {
-  const profile = useAuth((s) => s.profile);
-  const signOut = useAuth((s) => s.signOut);
+  const { t } = useTranslation();
   const { pathname } = useLocation();
+  const { navOpen, setNavOpen } = useShell();
 
   return (
-    <div className={styles.root}>
-      <header className={styles.topbar}>
-        <div className={styles.logo}>
-          TACTIC <span>CORPUS BUILDER</span>
+    <TooltipProvider>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-toast focus:rounded focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground"
+      >
+        {t('nav.skip')}
+      </a>
+
+      {/* Desktop sidebar */}
+      <aside className="fixed inset-y-0 left-0 z-sidebar hidden w-60 flex-col border-r border-border bg-surface lg:flex">
+        <div className="flex h-14 items-center border-b border-border px-6">
+          <Wordmark />
         </div>
-        <div className={styles.chips}>
-          <span className={`${styles.chip} ${styles.gold}`}>
-            {profile?.email ?? 'admin'}
-          </span>
-          <button className={styles.signOut} onClick={() => void signOut()}>
-            Sign out
-          </button>
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <SidebarNav />
         </div>
-      </header>
+      </aside>
 
-      <nav className={styles.tabs}>
-        {TABS.map((t) => (
-          <NavLink
-            key={t.to}
-            to={t.to}
-            className={({ isActive }) =>
-              `${styles.tab} ${isActive ? styles.tabActive : ''}`
-            }
-          >
-            {t.label}
-          </NavLink>
-        ))}
-      </nav>
+      {/* Phone / tablet navigation */}
+      <D.Root open={navOpen} onOpenChange={setNavOpen}>
+        <D.Portal>
+          <D.Overlay className="fixed inset-0 z-overlay bg-black/55 lg:hidden" />
+          <D.Content className="fixed inset-y-0 left-0 z-overlay flex w-72 max-w-[85vw] flex-col border-r border-border bg-surface shadow-overlay data-[state=open]:animate-in data-[state=open]:slide-in-from-left lg:hidden">
+            <D.Title className="flex h-14 items-center border-b border-border px-6">
+              <Wordmark />
+            </D.Title>
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <SidebarNav onNavigate={() => setNavOpen(false)} />
+            </div>
+          </D.Content>
+        </D.Portal>
+      </D.Root>
 
-      <main className={styles.content}>
-        <ErrorBoundary key={pathname}>
-          <Suspense fallback={<Loader label="Loading…" />}>
-            <Outlet />
-          </Suspense>
-        </ErrorBoundary>
-      </main>
+      <div className="flex min-h-screen flex-col lg:pl-60">
+        <Topbar />
+        <main id="main" tabIndex={-1} className="mx-auto w-full max-w-[1280px] flex-1 px-4 py-6 focus:outline-none sm:px-6 lg:px-8 lg:py-8">
+          <ErrorBoundary key={pathname}>
+            <Suspense fallback={<PageSkeleton />}>
+              <Outlet />
+            </Suspense>
+          </ErrorBoundary>
+        </main>
+      </div>
 
-      {/* Mounted globally so the editor/preview work from any tab. */}
+      <CommandPalette />
+      <AssistantPanel />
       <LessonEditorDrawer />
       <PreviewDrawer />
-      <RobotTact />
-    </div>
+    </TooltipProvider>
   );
 }

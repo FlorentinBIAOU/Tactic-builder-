@@ -1,11 +1,5 @@
-@import './tokens.css';
 @import './controls.css';
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
 html,
 body,
@@ -14,38 +8,7 @@ body,
 }
 
 body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--txt);
   overflow-x: hidden;
-}
-
-/* Background grid pattern (from auth.html body::before) */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: linear-gradient(rgba(255, 205, 13, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 205, 13, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Glow orbs (from auth.html body::after) */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(77, 158, 255, 0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(255, 205, 13, 0.06) 0%, transparent 60%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-#root {
-  position: relative;
-  z-index: 1;
 }
 
 a {
