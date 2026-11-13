@@ -6,6 +6,8 @@ import {
   deleteResource,
   uploadResourceFile,
   corpusErrorMessage,
+  isSafeUrl,
+  RESOURCE_FILE_ACCEPT,
 } from '@/lib/corpus';
 import { aiSyllabusLessons, type LessonIdea } from '@/lib/ai';
 import { SYLLABUS_TOTALS } from '@/lib/syllabus';
@@ -97,9 +99,13 @@ export default function ContentView() {
   };
 
   const setSyllabus = async (title: string, url: string) => {
-    if (syllabus) await removeResource(syllabus.id);
+    // Save the new syllabus first, then remove the old one, so a failed save
+    // never leaves the project without a syllabus.
+    const previous = syllabus;
     const ok = await addResource({ kind: 'syllabus', title, url });
-    if (ok) toast('Syllabus saved', 'success');
+    if (!ok) return;
+    if (previous) await removeResource(previous.id);
+    toast('Syllabus saved', 'success');
   };
 
   return (
@@ -287,7 +293,7 @@ function SyllabusPanel({
           <span>
             📚 <strong>{syllabus.title}</strong>
           </span>
-          <a className={styles.linkBtn} href={syllabus.url} target="_blank" rel="noreferrer">
+          <a className={styles.linkBtn} href={isSafeUrl(syllabus.url) ? syllabus.url : undefined} target="_blank" rel="noreferrer">
             Open ↗
           </a>
           <button className={styles.dangerLink} onClick={() => onRemove(syllabus.id)}>
@@ -410,8 +416,8 @@ function LibraryPanel({
     setUploading(true);
     try {
       const url = await uploadResourceFile(file);
-      await onAdd({ kind: kindFromFile(file), title: file.name, url, trackId: null });
-      toast('File uploaded', 'success');
+      const ok = await onAdd({ kind: kindFromFile(file), title: file.name, url, trackId: null });
+      if (ok) toast('File uploaded', 'success');
     } catch (e) {
       toast(corpusErrorMessage(e), 'error');
     } finally {
@@ -474,6 +480,7 @@ function LibraryPanel({
         <input
           ref={fileRef}
           type="file"
+          accept={RESOURCE_FILE_ACCEPT}
           style={{ display: 'none' }}
           onChange={(e) => {
             const f = e.target.files?.[0];
@@ -487,7 +494,7 @@ function LibraryPanel({
         >
           {uploading ? 'Uploading…' : '💾 Import from computer'}
         </button>
-        <span className={styles.uploadHint}>PDF, image, or audio — stored in Supabase Storage.</span>
+        <span className={styles.uploadHint}>PDF, image, audio or text, up to 25 MB.</span>
       </div>
 
       <div className={styles.libFilters}>
@@ -530,7 +537,7 @@ function LibraryPanel({
               <div key={r.id} className={styles.resRow}>
                 <span className={styles.resKind}>{KIND_ICON[r.kind] ?? '🔗'}</span>
                 <div className={styles.resMain}>
-                  <a className={styles.resTitle} href={r.url} target="_blank" rel="noreferrer">
+                  <a className={styles.resTitle} href={isSafeUrl(r.url) ? r.url : undefined} target="_blank" rel="noreferrer">
                     {r.title}
                   </a>
                   <div className={styles.resSub}>

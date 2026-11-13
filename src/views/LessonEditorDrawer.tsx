@@ -29,8 +29,25 @@ function blankLesson(): Lesson {
     blocks: [],
     quizzes: [emptyQuiz()],
     translations: {},
-    status: 'published',
+    // New lessons stay drafts until someone publishes them on purpose.
+    status: 'draft',
   };
+}
+
+/** Drop quiz rows left empty in the editor so they never reach the app. */
+function cleanQuizzes(quizzes: Quiz[]): Quiz[] {
+  return quizzes.filter((q) => q.q.trim() || q.opts.some((o) => o.trim()));
+}
+
+/** Returns a reason the lesson cannot be published, or null if it can. */
+function publishBlocker(l: Lesson): string | null {
+  if (!l.blocks.some((b) => b.text.trim())) return 'A published lesson needs at least one block with text.';
+  for (const q of l.quizzes) {
+    const filled = q.opts.filter((o) => o.trim());
+    if (!q.q.trim() || filled.length < 2) return 'Each quiz needs a question and at least two options.';
+    if (!q.opts[q.correct]?.trim()) return 'Each quiz needs a correct answer that is filled in.';
+  }
+  return null;
 }
 
 export default function LessonEditorDrawer() {
@@ -189,7 +206,7 @@ export default function LessonEditorDrawer() {
         ...(es ? { es } : {}),
       },
     }));
-    toast('Translations saved (EN + ES).', 'success');
+    toast('Translations added to the draft. Click Save to keep them.', 'success');
   };
 
   const onSave = async () => {
@@ -198,8 +215,16 @@ export default function LessonEditorDrawer() {
       return;
     }
     const id = form.id || newLessonId(form.level, lessons);
+    const next: Lesson = { ...form, id, quizzes: cleanQuizzes(form.quizzes) };
+    if (next.status === 'published') {
+      const reason = publishBlocker(next);
+      if (reason) {
+        toast(`${reason} Save it as a draft or complete it.`, 'error');
+        return;
+      }
+    }
     setBusy(true);
-    const ok = await saveLesson({ ...form, id });
+    const ok = await saveLesson(next);
     setBusy(false);
     if (ok) close();
   };

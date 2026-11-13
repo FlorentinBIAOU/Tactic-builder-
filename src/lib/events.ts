@@ -64,8 +64,24 @@ export async function fetchRetention(): Promise<Retention | null> {
     throw error;
   }
   const row = (data?.[0] ?? null) as Record<string, unknown> | null;
-  if (!row) return { d7: 0, d30: 0, cohort: 0 };
+  // No learner old enough to measure D+7 yet: return null so the view falls
+  // back to the streak-based proxy instead of showing 0 %.
+  if (!row || num(row.cohort) === 0) return null;
   return { d7: num(row.d7), d30: num(row.d30), cohort: num(row.cohort) };
+}
+
+export type DemoStatus = { demoRows: number; realRows: number };
+
+/** How many analytics rows are demo data (seed) vs real learner events. */
+export async function fetchDemoStatus(): Promise<DemoStatus | null> {
+  const { data, error } = await supabase.rpc('admin_demo_status');
+  if (error) {
+    if (isMissingRpc(error)) return null;
+    throw error;
+  }
+  const row = (data?.[0] ?? null) as Record<string, unknown> | null;
+  if (!row) return null;
+  return { demoRows: num(row.demo_rows), realRows: num(row.real_rows) };
 }
 
 export async function fetchQuizTradingCorr(limit = 200): Promise<CorrPoint[] | null> {

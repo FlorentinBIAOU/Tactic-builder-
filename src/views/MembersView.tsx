@@ -101,7 +101,8 @@ export default function MembersView() {
           value={inviteRole}
           onChange={(e) => setInviteRole(e.target.value as AdminRole)}
         >
-          {ADMIN_ROLES.map((r) => (
+          {/* Invites never grant admin directly: promote from the list below. */}
+          {ADMIN_ROLES.filter((r) => r !== 'admin').map((r) => (
             <option key={r} value={r}>
               {ROLE_LABELS[r]}
             </option>
@@ -140,6 +141,10 @@ export default function MembersView() {
                     <select
                       className="app-select"
                       value={m.role}
+                      // Changing your own role could lock you out of the panel.
+                      disabled={m.id === me?.id}
+                      title={m.id === me?.id ? 'Another admin must change your role.' : undefined}
+                      aria-label={`Role of ${m.email ?? 'member'}`}
                       onChange={(e) => void changeRole(m, e.target.value as AdminRole)}
                     >
                       {ADMIN_ROLES.map((r) => (

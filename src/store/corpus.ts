@@ -17,6 +17,8 @@ type CorpusState = {
   domains: Domain[];
   loading: boolean;
   loaded: boolean;
+  /** Set when the last load failed — views must not show "empty corpus". */
+  loadError: string | null;
 
   // Filters
   domainFilter: string | null; // domain id
@@ -61,6 +63,7 @@ export const useCorpus = create<CorpusState>((set, get) => ({
   domains: [],
   loading: false,
   loaded: false,
+  loadError: null,
 
   domainFilter: null,
   trackFilter: null,
@@ -71,7 +74,7 @@ export const useCorpus = create<CorpusState>((set, get) => ({
   previewLesson: null,
 
   load: async () => {
-    set({ loading: true });
+    set({ loading: true, loadError: null });
     try {
       const [tracks, lessons] = await Promise.all([
         api.fetchTracks(),
@@ -82,7 +85,9 @@ export const useCorpus = create<CorpusState>((set, get) => ({
       const domains = await api.fetchDomains().catch(() => [] as Domain[]);
       set({ tracks, lessons, domains, loaded: true });
     } catch (err) {
-      toast(corpusErrorMessage(err), 'error');
+      const msg = corpusErrorMessage(err);
+      set({ loadError: msg });
+      toast(msg, 'error');
     } finally {
       set({ loading: false });
     }
@@ -224,10 +229,13 @@ export const useCorpus = create<CorpusState>((set, get) => ({
 
   importSeed: async (tracks, lessons) => {
     try {
-      await api.insertTracks(tracks);
+      const t = await api.insertTracks(tracks);
       const n = await api.insertLessons(lessons);
       await get().load();
-      toast(`Imported ${n} lessons + ${tracks.length} modules`, 'success');
+      toast(
+        `Added ${n} lessons and ${t} modules. ${lessons.length - n} lessons already existed and were left unchanged.`,
+        'success'
+      );
       return true;
     } catch (err) {
       toast(corpusErrorMessage(err), 'error');
@@ -278,12 +286,12 @@ export const useCorpus = create<CorpusState>((set, get) => ({
           });
         });
       });
-      await api.insertDomains(domains);
-      await api.insertTracks(tracks);
+      const d = await api.insertDomains(domains);
+      const t = await api.insertTracks(tracks);
       const n = await api.insertLessons(lessons);
       await get().load();
       toast(
-        `Imported ${domains.length} domains, ${tracks.length} modules, ${n} lessons`,
+        `Added ${d} domains, ${t} modules, ${n} lessons. Existing items were left unchanged.`,
         'success'
       );
       return true;

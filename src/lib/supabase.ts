@@ -38,6 +38,13 @@ if (!isSupabaseConfigured && import.meta.env.DEV) {
  */
 export const AUTH_STORAGE_KEY = 'tactic-builder.auth';
 
+/**
+ * The URL hash as it was when the page loaded, read before supabase-js
+ * consumes and clears it. Recovery and invite links carry `type=recovery`
+ * or `type=invite` there; AuthView uses it to show the set-password form.
+ */
+export const INITIAL_AUTH_HASH = typeof window !== 'undefined' ? window.location.hash : '';
+
 export const supabase = createClient(
   SUPABASE_URL ?? 'http://localhost',
   SUPABASE_ANON_KEY ?? 'public-anon-key',

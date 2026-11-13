@@ -521,10 +521,16 @@ function CreatePanel() {
         duration: l.duration,
       });
       if (res.ok) {
+        // Re-read the lesson: someone may have edited it during generation.
+        const latest = useCorpus.getState().lessons.find((x) => x.id === l.id) ?? l;
+        if (latest.blocks.length > 0) {
+          setProgress({ done: i + 1, total: targetLessons.length });
+          continue;
+        }
         const saved = await saveLesson({
-          ...l,
+          ...latest,
           blocks: res.data.blocks ?? [],
-          quizzes: res.data.quiz ? [res.data.quiz] : l.quizzes,
+          quizzes: res.data.quiz ? [res.data.quiz] : latest.quizzes,
           status: 'draft',
         });
         if (saved) ok++;

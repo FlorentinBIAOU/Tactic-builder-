@@ -15,6 +15,7 @@ export default function ExploreView() {
   const {
     loading,
     loaded,
+    loadError,
     lessons,
     tracks,
     domains,
@@ -62,7 +63,10 @@ export default function ExploreView() {
           return (order.get(a.trackId ?? '') ?? 999) - (order.get(b.trackId ?? '') ?? 999);
       }
     });
-  }, [visibleLessons, tracks, sortKey]);
+    // lessons / filters / search are listed so the list refreshes when they
+    // change (visibleLessons is a stable store function).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visibleLessons, lessons, tracks, domainFilter, trackFilter, search, sortKey]);
 
   const domainCount = (id: string) =>
     lessons.filter((l) => trackDomain.get(l.trackId ?? '') === id).length;
@@ -114,6 +118,20 @@ export default function ExploreView() {
   };
 
   if (loading && !loaded) return <Loader label="Loading corpus…" />;
+
+  if (!loaded && loadError) {
+    return (
+      <div className={styles.wrap}>
+        <div className={styles.empty}>
+          <div className={styles.emptyTitle}>The corpus could not be loaded.</div>
+          <div className={styles.emptySub}>{loadError}</div>
+          <button type="button" className="btn primary" onClick={() => void load()}>
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.wrap}>
