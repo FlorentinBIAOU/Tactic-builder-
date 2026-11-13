@@ -46,8 +46,9 @@ async function invoke<T>(
       }
       return { ok: false, error: i18n.t('messages.errNetwork') };
     }
-    if (data && typeof data === 'object' && (data as any).ok === true) {
-      const parsed = schema.safeParse((data as any).data);
+    const payload = data as { ok?: unknown; data?: unknown } | null;
+    if (payload && typeof payload === 'object' && payload.ok === true) {
+      const parsed = schema.safeParse(payload.data);
       if (!parsed.success) {
         console.error('admin-ai: unexpected answer shape', parsed.error.issues);
         return { ok: false, error: i18n.t('messages.aiBadAnswer') };

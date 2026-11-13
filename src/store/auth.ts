@@ -90,7 +90,7 @@ export const useAuth = create<AuthState>((set, get) => ({
         : {
             id: session.user.id,
             email: session.user.email ?? null,
-            fullName: (session.user.user_metadata as any)?.full_name ?? null,
+            fullName: (session.user.user_metadata as { full_name?: string } | undefined)?.full_name ?? null,
             role: 'learner',
           };
 
