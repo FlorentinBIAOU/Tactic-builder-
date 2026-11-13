@@ -7,12 +7,12 @@ on:
 
 jobs:
   app:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
       - run: npm ci
       - run: npm run lint
@@ -21,7 +21,7 @@ jobs:
       - run: npm run build
 
   database:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:16
@@ -36,7 +36,7 @@ jobs:
       PGPASSWORD: postgres
       PGDATABASE: postgres
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Supabase stub
         run: psql -v ON_ERROR_STOP=1 -q -f supabase/tests/stub.sql
       - name: Apply migrations twice (must be idempotent)
