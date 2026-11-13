@@ -221,6 +221,12 @@ export const ROLE_LABELS: Record<AdminRole, string> = {
   admin: 'Admin',
 };
 
+/** One page of admin_list_staff(): the rows and the number of matches before paging. */
+export type StaffPage = {
+  members: Member[];
+  total: number;
+};
+
 export type AuditEntry = {
   id: string;
   actorEmail: string | null;
