@@ -1,9 +1,10 @@
 /**
  * Text-quality heuristics used by the Stats view.
  *
- * Pure functions — no React, no Supabase. Easy to unit-test if needed
- * later. All algorithms are deliberately simple; this is decision-support
- * for the admin, not academic NLP.
+ * Pure functions — no React, no Supabase. Lessons are written in French, so
+ * the readability score uses the French adaptation of Flesch (Kandel & Moles)
+ * and the Bloom detector matches whole French or English words.
+ * This is decision support for the pedagogy team, not academic NLP.
  */
 
 // ─── Word / sentence / syllable counters ───────────────────────────────────
@@ -18,6 +19,11 @@ export function stripMarkup(s: string): string {
     .trim();
 }
 
+/** Words made of letters (accents included). Numbers and symbols are dropped. */
+export function words(s: string): string[] {
+  return stripMarkup(s).toLowerCase().match(/[\p{L}]+(?:['’-][\p{L}]+)*/gu) ?? [];
+}
+
 export function wordCount(s: string): number {
   const clean = stripMarkup(s);
   if (!clean) return 0;
@@ -27,72 +33,78 @@ export function wordCount(s: string): number {
 export function sentenceCount(s: string): number {
   const clean = stripMarkup(s);
   if (!clean) return 0;
-  const matches = clean.match(/[.!?]+(?=\s|$)/g);
+  const matches = clean.match(/[.!?…]+(?=\s|$)/g);
   return Math.max(1, matches?.length ?? 1);
 }
 
 /**
- * Rough syllable estimator that handles French + English. Counts vowel
- * groups and applies a couple of common corrections. Not perfect, but
- * stable enough for the Flesch score to be meaningful at the lesson level.
+ * Syllable estimate for French (also fine for English). Each vowel group is
+ * one syllable; a silent final « e » / « es » is not counted (« tableau »
+ * = 2, « marché » = 2, « actions » = 2, « banque » = 1… close enough).
  */
 export function syllableCount(word: string): number {
   const w = word.toLowerCase().replace(/[^a-zàâäéèêëîïôöùûüÿœæç]/g, '');
   if (!w) return 0;
-  // Each vowel cluster ≈ one syllable.
   const groups = w.match(/[aeiouyàâäéèêëîïôöùûüÿœæ]+/g);
   let n = groups?.length ?? 0;
-  // Silent trailing 'e' (very common in French + English).
-  if (/[^aeiouy]e$/.test(w)) n = Math.max(1, n - 1);
+  if (n > 1 && /[^aeiouyàâäéèêëîïôöùûüÿœæ]es?$/.test(w)) n -= 1;
   return Math.max(1, n);
 }
 
-// ─── Flesch reading ease ────────────────────────────────────────────────────
+// ─── Readability (Kandel & Moles, French) ──────────────────────────────────
+
+/** Below this many words the score is too noisy to show. */
+export const MIN_WORDS_FOR_READABILITY = 30;
 
 /**
- * Flesch reading-ease score. Higher = easier.
- *  90+ very easy  · 60-70 standard · 30-50 difficult · < 30 very difficult
- *
- * Formula: 206.835 − 1.015 × (words/sentences) − 84.6 × (syllables/words)
+ * Kandel & Moles (1958) reading ease, the French adaptation of Flesch.
+ * Higher = easier, clamped to 0–100.
+ *   207 − 1.015 × (words / sentences) − 73.6 × (syllables / words)
+ * Returns `null` when the text is too short to judge.
  */
-export function flesch(text: string): number {
-  const clean = stripMarkup(text);
-  if (!clean) return 0;
-  const words = clean.split(/\s+/).filter(Boolean);
-  if (words.length === 0) return 0;
-  const sentences = sentenceCount(clean);
-  const syllables = words.reduce((acc, w) => acc + syllableCount(w), 0);
-  const score = 206.835 - 1.015 * (words.length / sentences) - 84.6 * (syllables / words.length);
+export function readability(text: string): number | null {
+  const list = words(text);
+  if (list.length < MIN_WORDS_FOR_READABILITY) return null;
+  const sentences = sentenceCount(text);
+  const syllables = list.reduce((acc, w) => acc + syllableCount(w), 0);
+  const score = 207 - 1.015 * (list.length / sentences) - 73.6 * (syllables / list.length);
   return Math.round(Math.max(0, Math.min(100, score)));
 }
 
-export function fleschBand(score: number): { label: string; tone: 'good' | 'warn' | 'bad' } {
-  if (score >= 60) return { label: 'Easy', tone: 'good' };
-  if (score >= 30) return { label: 'Standard', tone: 'warn' };
-  return { label: 'Hard', tone: 'bad' };
+export type ReadabilityBand = 'easy' | 'medium' | 'hard' | 'na';
+
+/** Easy ≥ 60 (plain French for a general audience), medium 40–59, hard < 40. */
+export function readabilityBand(score: number | null): ReadabilityBand {
+  if (score === null) return 'na';
+  if (score >= 60) return 'easy';
+  if (score >= 40) return 'medium';
+  return 'hard';
 }
 
-// ─── Bloom's taxonomy (keyword heuristic) ──────────────────────────────────
+// ─── Bloom's taxonomy (whole-word keywords) ────────────────────────────────
 
-const BLOOM_KEYWORDS: Record<string, string[]> = {
-  Remember: ['definition', 'définit', 'is the', 'c\'est', 'rappelle', 'list', 'name', 'identify'],
-  Understand: ['explain', 'explique', 'meaning', 'sens', 'why', 'pourquoi', 'compare', 'compare'],
-  Apply: ['use', 'utilise', 'apply', 'applique', 'calculate', 'calcule', 'compute', 'example'],
-  Analyze: ['analyse', 'analyze', 'breakdown', 'distingue', 'differentiate', 'because', 'cause'],
-  Evaluate: ['evaluate', 'évalue', 'judge', 'critique', 'compare and', 'argue', 'justify', 'should'],
-  Create: ['design', 'conçois', 'create', 'crée', 'compose', 'construct', 'build', 'plan a'],
+export const BLOOM_ORDER = ['Remember', 'Understand', 'Apply', 'Analyze', 'Evaluate', 'Create'] as const;
+export type BloomLevel = (typeof BLOOM_ORDER)[number];
+
+/** Verbs and phrases that signal each level. Matched on whole words only. */
+const BLOOM_KEYWORDS: Record<BloomLevel, string[]> = {
+  Remember: ['définition', 'définir', 'définis', 'rappelle', 'rappeler', 'retiens', 'retenir', 'definition', 'define', 'recall', 'list', 'identify'],
+  Understand: ['explique', 'expliquer', 'expliquez', 'pourquoi', 'signifie', 'reformule', 'résume', 'explain', 'why', 'meaning', 'summarize', 'describe'],
+  Apply: ['utilise', 'utiliser', 'utilisez', 'applique', 'appliquer', 'appliquez', 'calcule', 'calculer', 'calculez', 'use', 'apply', 'calculate', 'compute'],
+  Analyze: ['analyse', 'analyser', 'analysez', 'distingue', 'distinguer', 'compare', 'comparer', 'comparez', 'analyze', 'differentiate', 'break down'],
+  Evaluate: ['évalue', 'évaluer', 'évaluez', 'juge', 'juger', 'justifie', 'justifier', 'critique', 'critiquer', 'evaluate', 'judge', 'justify', 'argue'],
+  Create: ['conçois', 'concevoir', 'concevez', 'construis', 'construire', 'construisez', 'élabore', 'élaborer', 'design', 'create', 'compose', 'construct'],
 };
 
-const BLOOM_ORDER = ['Remember', 'Understand', 'Apply', 'Analyze', 'Evaluate', 'Create'] as const;
-
-/** Returns the highest Bloom level whose keywords appear in the text. */
-export function bloomLevel(text: string): typeof BLOOM_ORDER[number] {
-  const t = stripMarkup(text).toLowerCase();
-  let best: typeof BLOOM_ORDER[number] = 'Remember';
+/** Highest Bloom level whose keyword appears as a whole word (or phrase). */
+export function bloomLevel(text: string): BloomLevel {
+  const list = words(text);
+  const tokens = new Set(list);
+  const joined = ` ${list.join(' ')} `;
+  let best: BloomLevel = 'Remember';
   for (const level of BLOOM_ORDER) {
-    if (BLOOM_KEYWORDS[level].some((k) => t.includes(k))) {
-      best = level;
-    }
+    const hit = BLOOM_KEYWORDS[level].some((k) => (k.includes(' ') ? joined.includes(` ${k} `) : tokens.has(k)));
+    if (hit) best = level;
   }
   return best;
 }
@@ -106,4 +118,12 @@ export function pct(value: number, total: number): number {
 
 export function formatInt(n: number): string {
   return new Intl.NumberFormat('en-US').format(n);
+}
+
+/** « 2 min 05 s » / « 45 s ». Seconds are rounded. */
+export function formatDuration(seconds: number): string {
+  const s = Math.max(0, Math.round(seconds));
+  if (s < 60) return `${s} s`;
+  const m = Math.floor(s / 60);
+  return `${m} min ${String(s % 60).padStart(2, '0')} s`;
 }

@@ -1,0 +1,97 @@
+{
+  "title": "Tableau de bord",
+  "description": "Ce qui demande votre attention dans le corpus, et l'activité des apprenants.",
+  "newLesson": "Créer une leçon",
+  "corpusError": "Impossible de charger le corpus.",
+  "retry": "Réessayer",
+  "empty": {
+    "title": "Le corpus est vide",
+    "body": "Créez une première leçon ou importez un corpus existant pour commencer.",
+    "import": "Importer un corpus"
+  },
+  "corpus": {
+    "title": "Corpus",
+    "details": "Statistiques détaillées",
+    "publishedOf_one": "leçon publiée sur {{total}}.",
+    "publishedOf_other": "leçons publiées sur {{total}}.",
+    "urgent_one": "{{n}} point à corriger.",
+    "urgent_other": "{{n}} points à corriger.",
+    "allGood": "Rien d'urgent.",
+    "publishedPct": "{{pct}} publiées",
+    "drafts_one": "{{n}} brouillon",
+    "drafts_other": "{{n}} brouillons"
+  },
+  "attention": {
+    "none": "Tout est en ordre : chaque leçon a un contenu, un quiz, un module et une traduction.",
+    "empty": {
+      "label_one": "{{count}} leçon sans contenu",
+      "label_other": "{{count}} leçons sans contenu",
+      "help": "Aucun bloc rédigé : la leçon est vide dans l'app."
+    },
+    "noquiz": {
+      "label_one": "{{count}} leçon sans quiz",
+      "label_other": "{{count}} leçons sans quiz",
+      "help": "Pas de question pour vérifier ce qui a été compris."
+    },
+    "unassigned": {
+      "label_one": "{{count}} leçon sans module",
+      "label_other": "{{count}} leçons sans module",
+      "help": "Invisible dans le parcours tant qu'elle n'est pas rattachée."
+    },
+    "untranslated": {
+      "label_one": "{{count}} leçon non traduite en anglais",
+      "label_other": "{{count}} leçons non traduites en anglais",
+      "help": "Aucun bloc traduit en anglais."
+    },
+    "drafts": {
+      "label_one": "{{count}} brouillon à relire",
+      "label_other": "{{count}} brouillons à relire",
+      "help": "Pas encore visibles par les apprenants."
+    },
+    "emptyModules": {
+      "label_one": "{{count}} module vide",
+      "label_other": "{{count}} modules vides",
+      "help": "Module créé sans aucune leçon."
+    }
+  },
+  "learners": {
+    "title": "Apprenants",
+    "details": "Voir le détail",
+    "missing": "Le suivi des apprenants n'est pas encore activé.",
+    "users": "Utilisateurs",
+    "active": "Actifs",
+    "activeShare": "{{pct}} ont une série en cours",
+    "completions": "Leçons terminées"
+  },
+  "charts": {
+    "domains": "Couverture par domaine",
+    "domainsInfo": "Leçons publiées, brouillons et leçons encore vides dans chaque domaine.",
+    "top": "Leçons les plus terminées",
+    "topInfo": "Les 6 leçons terminées le plus souvent par les apprenants.",
+    "topEmpty": "Aucune leçon terminée pour l'instant.",
+    "completions": "Leçons terminées"
+  },
+  "reports": {
+    "title": "Derniers rapports d'agents",
+    "all": "Tous les rapports",
+    "emptyTitle": "Aucun rapport pour l'instant",
+    "emptyBody": "Lancez un agent pour obtenir un audit du corpus ou des pistes de nouvelles leçons.",
+    "run": "Lancer un agent",
+    "more_one": "(et {{count}} autre constat)",
+    "more_other": "(et {{count}} autres constats)",
+    "status": {
+      "new": "Nouveau",
+      "in_progress": "En cours",
+      "done": "Traité",
+      "archived": "Archivé"
+    }
+  },
+  "shortcuts": {
+    "title": "Raccourcis",
+    "drafts": { "label": "Relire les brouillons", "help": "Les leçons pas encore publiées" },
+    "ideas": { "label": "Trouver des idées de leçons", "help": "Propositions à partir du programme" },
+    "agents": { "label": "Lancer un agent", "help": "Audit, manques, performance" },
+    "import": { "label": "Importer ou exporter", "help": "Corpus, programme, fichier pour l'app" },
+    "quality": { "label": "Qualité des contenus", "help": "Lisibilité, quiz, traductions" }
+  }
+}

@@ -6,7 +6,8 @@
 
 import { supabase } from './supabase';
 
-function isMissingRpc(err: { code?: string; message?: string } | null): boolean {
+/** True when the error means « this RPC is not installed in the database ». */
+export function isMissingRpc(err: { code?: string; message?: string } | null | undefined): boolean {
   if (!err) return false;
   return (
     err.code === 'PGRST202' ||
@@ -15,7 +16,7 @@ function isMissingRpc(err: { code?: string; message?: string } | null): boolean 
   );
 }
 
-function num(v: unknown): number {
+export function num(v: unknown): number {
   const n = typeof v === 'string' ? Number(v) : (v as number);
   return Number.isFinite(n) ? n : 0;
 }
@@ -51,10 +52,12 @@ export async function fetchLessonFunnel(lessonId: string): Promise<FunnelStep[] 
     if (isMissingRpc(error)) return null;
     throw error;
   }
-  return (data ?? []).map((r: Record<string, unknown>) => ({
-    stepIndex: num(r.step_index),
-    learners: num(r.learners),
-  }));
+  return (data ?? [])
+    .map((r: Record<string, unknown>) => ({
+      stepIndex: num(r.step_index),
+      learners: num(r.learners),
+    }))
+    .sort((a: FunnelStep, b: FunnelStep) => a.stepIndex - b.stepIndex);
 }
 
 export async function fetchRetention(): Promise<Retention | null> {
