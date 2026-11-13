@@ -1,4 +1,7 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { Suspense } from 'react';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import Loader from '@/components/Loader';
 import { useAuth } from '@/store/auth';
 import LessonEditorDrawer from '@/views/LessonEditorDrawer';
 import PreviewDrawer from '@/views/PreviewDrawer';
@@ -20,6 +23,7 @@ const TABS = [
 export default function AppShell() {
   const profile = useAuth((s) => s.profile);
   const signOut = useAuth((s) => s.signOut);
+  const { pathname } = useLocation();
 
   return (
     <div className={styles.root}>
@@ -52,7 +56,11 @@ export default function AppShell() {
       </nav>
 
       <main className={styles.content}>
-        <Outlet />
+        <ErrorBoundary key={pathname}>
+          <Suspense fallback={<Loader label="Loading…" />}>
+            <Outlet />
+          </Suspense>
+        </ErrorBoundary>
       </main>
 
       {/* Mounted globally so the editor/preview work from any tab. */}
