@@ -24,7 +24,8 @@
 // Optional secrets:
 //   AI_DAILY_LIMIT    — calls per admin per day (default 200)
 //   ADMIN_SITE_URL    — deployed admin URL; used as the invite redirect and,
-//                       when set, as the only allowed CORS origin
+//                       when set, as the allowed CORS origin
+//   ADMIN_EXTRA_ORIGINS — extra allowed origins, comma-separated
 //
 // Deploy:
 //   supabase functions deploy admin-ai --no-verify-jwt
@@ -36,13 +37,27 @@ import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supa
 
 const ADMIN_SITE_URL = (Deno.env.get('ADMIN_SITE_URL') || '').replace(/\/+$/, '');
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': ADMIN_SITE_URL || '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
-  Vary: 'Origin',
-};
+// When ADMIN_SITE_URL is set, only that origin (plus ADMIN_EXTRA_ORIGINS,
+// comma-separated, e.g. a preview URL or http://localhost:5173) may call the
+// function from a browser. Unset: any origin (the JWT check still applies).
+const ALLOWED_ORIGINS = [
+  ADMIN_SITE_URL,
+  ...(Deno.env.get('ADMIN_EXTRA_ORIGINS') || '').split(',').map((o) => o.trim().replace(/\/+$/, '')),
+].filter(Boolean);
+
+function corsHeaders(requestOrigin: string): Record<string, string> {
+  const allow = !ALLOWED_ORIGINS.length
+    ? '*'
+    : ALLOWED_ORIGINS.includes(requestOrigin)
+    ? requestOrigin
+    : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allow,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    Vary: 'Origin',
+  };
+}
 
 const MAX_BODY_CHARS = 200_000;
 const OPENAI_TIMEOUT_MS = 60_000;
@@ -78,7 +93,6 @@ function json(body: unknown, init?: ResponseInit): Response {
     ...init,
     headers: {
       'Content-Type': 'application/json',
-      ...CORS_HEADERS,
       ...(init?.headers ?? {}),
     },
   });
@@ -195,8 +209,12 @@ async function checkQuota(sb: SupabaseClient): Promise<Response | null> {
   const { data, error } = await sb.rpc('admin_ai_consume', { p_limit: limit });
   if (error) {
     // Migration 0007 not applied yet: don't block, but log it.
+    if (error.code === 'PGRST202' || error.code === '42883') {
+      console.error('admin_ai_consume missing — apply migration 0007');
+      return null;
+    }
     console.error('admin_ai_consume failed', error.message);
-    return null;
+    return json({ ok: false, error: 'The AI quota could not be checked. Try again.' }, { status: 503 });
   }
   if (data === false) {
     return json({ ok: false, error: 'Daily AI limit reached. Try again tomorrow.' }, { status: 429 });
@@ -564,10 +582,18 @@ async function callOpenAI(system: string, user: string, model: string, apiKey: s
 
 // ─── Entry point ──────────────────────────────────────────────────────────
 
+// CORS headers are added to every response here, per request.
 Deno.serve(async (req: Request) => {
+  const origin = (req.headers.get('Origin') || '').replace(/\/+$/, '');
   if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: CORS_HEADERS });
+    return new Response(null, { status: 204, headers: corsHeaders(origin) });
   }
+  const res = await handle(req);
+  for (const [k, v] of Object.entries(corsHeaders(origin))) res.headers.set(k, v);
+  return res;
+});
+
+async function handle(req: Request): Promise<Response> {
   if (req.method !== 'POST') {
     return json({ ok: false, error: 'Method not allowed' }, { status: 405 });
   }
@@ -658,4 +684,4 @@ Deno.serve(async (req: Request) => {
     const msg = err instanceof Error && err.message.startsWith('The AI') ? err.message : 'The AI request failed. Try again.';
     return json({ ok: false, error: msg }, { status: 502 });
   }
-});
+}

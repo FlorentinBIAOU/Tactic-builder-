@@ -48,7 +48,9 @@ dashboard → SQL editor and run it (all are idempotent).
 
 Before applying `0007`, check how the mobile app creates profile rows: the
 new trigger forces `role = 'learner'` on inserts made with the anon /
-authenticated roles, and refuses role changes from those roles.
+authenticated roles, and ignores role changes from those roles (the current
+role is kept). A signup trigger such as `handle_new_user` must never copy
+`role` from `raw_user_meta_data`.
 
 **Option B — CLI** (only if this repo owns the migration history of the
 project; the project is shared with the mobile app, whose `0001` is not here):
@@ -78,6 +80,7 @@ supabase functions deploy admin-ai --no-verify-jwt
 #
 # Optional:
 # supabase secrets set ADMIN_SITE_URL=https://<admin domain>   # invite links + CORS
+# supabase secrets set ADMIN_EXTRA_ORIGINS=http://localhost:5173  # extra CORS origins
 # supabase secrets set AI_DAILY_LIMIT=200                      # AI calls per admin per day
 ```
 

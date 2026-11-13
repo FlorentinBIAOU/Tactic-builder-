@@ -21,6 +21,10 @@
 -- Clients (roles anon / authenticated) may update their own profile row for
 -- coins, xp, etc., but never the role. Role changes go through
 -- admin_set_role() (SECURITY DEFINER) or the service role (edge function).
+-- A client write that tries to change the role keeps the current role
+-- instead of failing, so a mobile "upsert the whole profile" keeps working.
+-- NOTE: a signup trigger (handle_new_user) runs as its owner and is not
+-- covered here — it must never copy `role` from raw_user_meta_data.
 create or replace function public.profiles_guard_role()
 returns trigger
 language plpgsql
@@ -30,8 +34,7 @@ begin
     if tg_op = 'INSERT' then
       new.role := 'learner';
     elsif new.role is distinct from old.role then
-      raise exception 'role can only be changed by an admin'
-        using errcode = '42501';
+      new.role := old.role;
     end if;
   end if;
   return new;
@@ -57,16 +60,17 @@ declare
   v_target  text;
   v_admins  int;
 begin
+  -- Serialise role changes (taken before the admin check) so two
+  -- concurrent calls cannot both pass the "last admin" check, and a caller
+  -- demoted meanwhile is re-checked.
+  perform pg_advisory_xact_lock(hashtext('tactic.admin_set_role'));
+
   if not public.is_admin() then
     raise exception 'Admin role required';
   end if;
   if p_role not in ('learner','ux','ped','data','admin') then
     raise exception 'Invalid role %', p_role;
   end if;
-
-  -- Serialise role changes so two concurrent demotions cannot both pass the
-  -- "last admin" check.
-  perform pg_advisory_xact_lock(hashtext('tactic.admin_set_role'));
 
   select count(*) into v_admins from public.profiles where role = 'admin';
   if v_admins <= 1 and p_role <> 'admin'
@@ -117,19 +121,26 @@ begin
   end if;
 end $$;
 
--- Learners can only write real (non-demo) rows for themselves.
+-- Learners can only write real (non-demo), current rows for themselves.
+-- The lower bound on created_at stops back-dated events that would inflate
+-- retention.
 drop policy if exists "lesson_events_owner_insert" on public.lesson_events;
 create policy "lesson_events_owner_insert" on public.lesson_events
-  for insert with check (auth.uid() = user_id and not is_demo);
+  for insert with check (
+    auth.uid() = user_id and not is_demo
+    and created_at >= now() - interval '10 minutes'
+  );
 
 drop policy if exists "trading_sim_owner_insert" on public.trading_sim_results;
 create policy "trading_sim_owner_insert" on public.trading_sim_results
-  for insert with check (auth.uid() = user_id and not is_demo);
+  for insert with check (
+    auth.uid() = user_id and not is_demo
+    and created_at >= now() - interval '10 minutes'
+  );
 
--- The mobile app could not write touchpoints at all before (no policy).
-drop policy if exists "touchpoints_owner_insert" on public.marketing_touchpoints;
-create policy "touchpoints_owner_insert" on public.marketing_touchpoints
-  for insert with check (auth.uid() = user_id and not is_demo);
+-- marketing_touchpoints stays admin / service-role only: a learner must not
+-- be able to record conversions. The mobile app should write them through a
+-- server-side function.
 
 -- ─── 5. admin_lesson_funnel (rewritten: was failing on every call) ────────
 drop function if exists public.admin_lesson_funnel(text);
@@ -218,7 +229,7 @@ update storage.buckets
        allowed_mime_types = array[
          'application/pdf',
          'image/png','image/jpeg','image/webp','image/gif',
-         'audio/mpeg','audio/mp4','audio/wav','audio/ogg',
+         'audio/mpeg','audio/mp4','audio/x-m4a','audio/wav','audio/x-wav','audio/wave','audio/ogg',
          'text/plain','text/markdown'
        ]
  where id = 'resources';

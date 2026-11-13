@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase, INITIAL_AUTH_HASH } from '@/lib/supabase';
+import { supabase, takeInitialAuthHash } from '@/lib/supabase';
 import { useAuth } from '@/store/auth';
 import styles from './AuthView.module.css';
 
@@ -48,8 +48,9 @@ export default function AuthView() {
   // recovery or invite email link (token in the URL hash). A plain
   // `?reset=1` on an open session is not enough.
   useEffect(() => {
-    if (INITIAL_AUTH_HASH.includes('type=recovery')) setMode('reset');
-    if (INITIAL_AUTH_HASH.includes('type=invite')) {
+    const hash = takeInitialAuthHash();
+    if (hash.includes('type=recovery')) setMode('reset');
+    if (hash.includes('type=invite')) {
       setInvited(true);
       setMode('reset');
     }

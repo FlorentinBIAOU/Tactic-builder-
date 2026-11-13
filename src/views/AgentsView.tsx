@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useCorpus } from '@/store/corpus';
+import { fetchLessonBlocks } from '@/lib/corpus';
 import { useAnalytics } from '@/store/analytics';
 import { computeCorpusHealth } from '@/lib/analytics';
 import { aiRunAgent, aiGenerateContent, type AgentDef, type AgentReport } from '@/lib/ai';
@@ -521,9 +522,11 @@ function CreatePanel() {
         duration: l.duration,
       });
       if (res.ok) {
-        // Re-read the lesson: someone may have edited it during generation.
+        // Re-check the database: someone may have added content to this
+        // lesson during generation. If so, leave it alone.
         const latest = useCorpus.getState().lessons.find((x) => x.id === l.id) ?? l;
-        if (latest.blocks.length > 0) {
+        const dbBlocks = await fetchLessonBlocks(l.id).catch(() => null);
+        if (latest.blocks.length > 0 || dbBlocks === null || dbBlocks.length > 0) {
           setProgress({ done: i + 1, total: targetLessons.length });
           continue;
         }

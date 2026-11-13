@@ -20,7 +20,10 @@ function clampInt(v: unknown, min: number, max: number, fallback: number): numbe
   return Number.isFinite(n) ? Math.min(max, Math.max(min, Math.round(n))) : fallback;
 }
 
-function normalizeImport(raw: unknown): { tracks: Track[]; lessons: Lesson[] } {
+function normalizeImport(
+  raw: unknown,
+  knownDomains: Set<string>
+): { tracks: Track[]; lessons: Lesson[] } {
   const obj = (raw ?? {}) as Record<string, unknown>;
   const rawTracks = Array.isArray(obj.tracks) ? obj.tracks : [];
   const rawLessons = Array.isArray(obj.lessons)
@@ -39,7 +42,8 @@ function normalizeImport(raw: unknown): { tracks: Track[]; lessons: Lesson[] } {
       level: asLevel(r.level),
       sortOrder: typeof r.sortOrder === 'number' ? r.sortOrder : i,
       theme: r.theme ? String(r.theme) : undefined,
-      domainId: r.domainId ? String(r.domainId) : null,
+      // Unknown domains are dropped (the foreign key would reject the batch).
+      domainId: r.domainId && knownDomains.has(String(r.domainId)) ? String(r.domainId) : null,
       coreQuestion: r.coreQuestion ? String(r.coreQuestion) : undefined,
     };
   });
@@ -129,7 +133,10 @@ export default function ExportView() {
   const onFilePicked = async (file: File) => {
     try {
       const text = await file.text();
-      const parsed = normalizeImport(JSON.parse(text));
+      const parsed = normalizeImport(
+        JSON.parse(text),
+        new Set(useCorpus.getState().domains.map((d) => d.id))
+      );
       if (parsed.lessons.length === 0 && parsed.tracks.length === 0) {
         toast('No lessons or modules found in that file.', 'error');
         return;

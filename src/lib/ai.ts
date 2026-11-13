@@ -6,6 +6,7 @@
  * non-admins. The OpenAI key never touches the browser bundle.
  */
 
+import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import type { Block, Quiz, Translation } from '@/lib/types';
 
@@ -17,6 +18,11 @@ async function invoke<T>(body: Record<string, unknown>): Promise<AiResult<T>> {
   try {
     const { data, error } = await supabase.functions.invoke('admin-ai', { body });
     if (error) {
+      // Non-2xx answers carry a readable `error` in their JSON body.
+      if (error instanceof FunctionsHttpError) {
+        const b = await error.context.json().catch(() => null);
+        if (b && typeof b.error === 'string') return { ok: false, error: b.error };
+      }
       return { ok: false, error: error.message ?? 'admin-ai call failed' };
     }
     if (data && typeof data === 'object' && (data as any).ok === true) {

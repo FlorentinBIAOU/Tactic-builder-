@@ -159,6 +159,39 @@ export async function deleteDomain(id: string): Promise<void> {
 export const RESOURCE_FILE_ACCEPT = '.pdf,.png,.jpg,.jpeg,.webp,.gif,.mp3,.m4a,.wav,.ogg,.txt,.md';
 export const RESOURCE_FILE_MAX_BYTES = 25 * 1024 * 1024;
 
+const EXT_TYPES: Record<string, string> = {
+  pdf: 'application/pdf',
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  webp: 'image/webp',
+  gif: 'image/gif',
+  mp3: 'audio/mpeg',
+  m4a: 'audio/mp4',
+  wav: 'audio/wav',
+  ogg: 'audio/ogg',
+  txt: 'text/plain',
+  md: 'text/markdown',
+};
+
+function contentTypeFor(file: File): string {
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+  return EXT_TYPES[ext] ?? (file.type || 'application/octet-stream');
+}
+
+/** Read one lesson's current blocks from the database. */
+export async function fetchLessonBlocks(id: string): Promise<unknown[]> {
+  const { data, error } = await supabase
+    .from('corpus_lessons')
+    .select('blocks')
+    .eq('id', id)
+    .maybeSingle();
+  if (error) throw error;
+  return Array.isArray((data as { blocks?: unknown } | null)?.blocks)
+    ? ((data as { blocks: unknown[] }).blocks)
+    : [];
+}
+
 /** Upload a file to the public `resources` bucket; returns its public URL. */
 export async function uploadResourceFile(file: File): Promise<string> {
   if (file.size > RESOURCE_FILE_MAX_BYTES) {
@@ -169,6 +202,9 @@ export async function uploadResourceFile(file: File): Promise<string> {
   const { error } = await supabase.storage.from('resources').upload(path, file, {
     cacheControl: '3600',
     upsert: false,
+    // Browsers report some types inconsistently (.md, .m4a): send the type
+    // the bucket expects, based on the extension.
+    contentType: contentTypeFor(file),
   });
   if (error) throw error;
   const { data } = supabase.storage.from('resources').getPublicUrl(path);
